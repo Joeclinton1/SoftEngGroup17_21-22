@@ -2,6 +2,7 @@ import React from "react";
 import DrawerHeader from "./DrawerHeader";
 
 import { ListItem, ListItemIcon, ListItemText, Divider, IconButton, List, Drawer } from '@mui/material';
+import {Link} from "react-router-dom"
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AdminIcon from '@mui/icons-material/AdminPanelSettings';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -10,9 +11,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
 
-const MenuListItem = ({ text, icon }) => {
+const MenuListItem = ({ text, icon, to}) => {
     return (
-        <ListItem button key={text}>
+        <ListItem button key={text} component={Link} to = {to}>
             <ListItemIcon>
                 {icon}
             </ListItemIcon>
@@ -43,13 +44,13 @@ export default function LetftMenu(props) {
             </DrawerHeader>
             <Divider />
             <List>
-                <MenuListItem text="Chat" icon={<ChatIcon />} />
-                <MenuListItem text="Admin" icon={<AdminIcon />} />
+                <MenuListItem text="Chat" icon={<ChatIcon />} to="/" />
+                <MenuListItem text="Admin" icon={<AdminIcon />} to="admin" />
             </List>
             <Divider />
             <List>
-                <MenuListItem text="Saved Chats" icon={<FolderIcon />} />
-                <MenuListItem text="Options" icon={<SettingsIcon />} />
+                <MenuListItem text="Saved Chats" icon={<FolderIcon />} to="saved-chats" />
+                <MenuListItem text="Options" icon={<SettingsIcon />} to="options" />
             </List>
         </Drawer>
     );
