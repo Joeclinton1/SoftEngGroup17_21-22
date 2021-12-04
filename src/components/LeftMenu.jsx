@@ -1,17 +1,25 @@
 import React from "react";
 import DrawerHeader from "./DrawerHeader";
+
+import { ListItem, ListItemIcon, ListItemText, Divider, IconButton, List, Drawer } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import Drawer from '@mui/material/Drawer';
+import AdminIcon from '@mui/icons-material/AdminPanelSettings';
+import ChatIcon from '@mui/icons-material/Chat';
+import FolderIcon from '@mui/icons-material/FolderSpecial';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
+
+const MenuListItem = ({ text, icon }) => {
+    return (
+        <ListItem button key={text}>
+            <ListItemIcon>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+        </ListItem>
+    )
+}
 
 export default function LetftMenu(props) {
     return (
@@ -35,25 +43,13 @@ export default function LetftMenu(props) {
             </DrawerHeader>
             <Divider />
             <List>
-                {['Chat', 'Admin'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
+                <MenuListItem text="Chat" icon={<ChatIcon />} />
+                <MenuListItem text="Admin" icon={<AdminIcon />} />
             </List>
             <Divider />
             <List>
-                {['Saved Chats', 'Options'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
+                <MenuListItem text="Saved Chats" icon={<FolderIcon />} />
+                <MenuListItem text="Options" icon={<SettingsIcon />} />
             </List>
         </Drawer>
     );
