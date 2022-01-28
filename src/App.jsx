@@ -47,16 +47,24 @@ function App() {
 
     return (
         <Router>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', height: '100vh'}}>
                 <CssBaseline />
                 <NavBar handleDrawerOpen={handleDrawerOpen} />
                 <LeftMenu handleDrawerClose={handleDrawerClose} open={open} />
 
-                <Main open={open}>
+                <Main open={open} style = {{padding: '0px'}}>
                     <DrawerHeader />
-                    <Routes>
-                        <Route path="/" element={<Chat />} />
-                    </Routes>
+                    <div style={{
+                        display: "flex",
+                        padding: '24px',
+                        justifyContent: "center",
+                        height: "calc(100vh - 64px)",
+                        margin: "auto"
+                        }}>
+                        <Routes>
+                            <Route path="/" element={<Chat />} />
+                        </Routes>
+                    </div>
                 </Main>
             </Box>
         </Router>
