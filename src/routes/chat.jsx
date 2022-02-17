@@ -87,7 +87,7 @@ class Chat extends Component{
         environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
         collectionId: '2e651944-431c-4dbc-b407-716036caea75',
         configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
-        Query: text
+        naturalLanguageQuery: text
         };
 
         discovery.query(queryParams)
