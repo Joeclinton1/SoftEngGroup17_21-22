@@ -116,7 +116,7 @@ class Chat extends Component{
         let currentTime = new Date().toLocaleString();
     
         // download file to users local storage
-        element.download = "transcipt_" + currentTime +".txt";
+        element.download = "transcipt_" + currentTime +".json";
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
     }
