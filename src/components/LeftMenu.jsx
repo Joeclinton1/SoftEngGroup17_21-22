@@ -45,11 +45,9 @@ export default function LetftMenu(props) {
             <Divider />
             <List>
                 <MenuListItem text="Chat" icon={<ChatIcon />} to="/" />
-                <MenuListItem text="Admin" icon={<AdminIcon />} to="admin" />
             </List>
             <Divider />
             <List>
-                <MenuListItem text="Saved Chats" icon={<FolderIcon />} to="saved-chats" />
                 <MenuListItem text="Options" icon={<SettingsIcon />} to="options" />
             </List>
         </Drawer>

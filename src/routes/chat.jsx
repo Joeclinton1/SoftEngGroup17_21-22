@@ -12,6 +12,17 @@ import React, { Component, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
+//Initialize Watson instance
+const DiscoveryV1 = require('ibm-watson/discovery/v1');
+const { IamAuthenticator } = require('ibm-watson/auth');
+
+const discovery = new DiscoveryV1({
+version: '2019-04-30',
+authenticator: new IamAuthenticator({
+    apikey: '__Kp8R3pLrESr2vmVT4vRjsgBEo5ZKkWHPPar0pOOti2',
+}),
+serviceUrl: 'https://api.eu-gb.discovery.watson.cloud.ibm.com/instances/d874b546-9b02-4c6a-bc6c-3042fedb37be',
+});
 
 class ChatGroup {
     constructor(id, direction, messages) {
@@ -63,13 +74,35 @@ class Chat extends Component{
         }
     }
 
-    receiveNextMessage = () => {
-        this.setState({typingIndicator: 0});
-        this.setState({currentMessages: [
+    receiveNextMessage = (resp) => {
+        if(resp === "error"){
+            this.setState({typingIndicator: 0});
+            this.setState({currentMessages: [
+                
                 ...this.state.currentMessages,
-                fakeMessages.shift()
+                new ChatGroup(1, "incoming", [
+                    new ChatMessage(0,
+                        "I'm sorry, I couldn't understand. Could you please rephrase the question?"
+                    )
+                ]),
             ]
         })
+        } else {
+            this.setState({typingIndicator: 0});
+            this.setState({currentMessages: [
+                
+                ...this.state.currentMessages,
+                new ChatGroup(1, "incoming", [
+                    new ChatMessage(0,
+                        resp.substring(0, 300)
+                    ),
+                    new ChatMessage(1,
+                        "Does this answer your question?"
+                    )
+                ]),
+            ]
+        })
+        }
     }
     
     saveFunction = () => {
@@ -90,32 +123,14 @@ class Chat extends Component{
 
     handleSend = (text) => {
         console.log(text)
-        const DiscoveryV1 = require('ibm-watson/discovery/v1');
-        const { IamAuthenticator } = require('ibm-watson/auth');
-
-        const discovery = new DiscoveryV1({
-        version: '2019-04-30',
-        authenticator: new IamAuthenticator({
-            apikey: '__Kp8R3pLrESr2vmVT4vRjsgBEo5ZKkWHPPar0pOOti2',
-        }),
-        serviceUrl: 'https://api.eu-gb.discovery.watson.cloud.ibm.com/instances/d874b546-9b02-4c6a-bc6c-3042fedb37be',
-        });
-
+        //initialize query parameters
         const queryParams = {
-        environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
-        collectionId: '2e651944-431c-4dbc-b407-716036caea75',
-        configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
-        Query: text
-        };
-
-        discovery.query(queryParams)
-        .then(queryResponse => {
-            console.log(JSON.stringify(queryResponse, null, 2));
-        })
-        .catch(err => {
-            console.log('error:', err);
-        });
-
+            environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
+            collectionId: '2e651944-431c-4dbc-b407-716036caea75',
+            configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
+            naturalLanguageQuery: text
+            };
+        
         const {currentMessages} = this.state
         const id = currentMessages.length;
         const msg = new ChatMessage(id, text);
@@ -131,10 +146,38 @@ class Chat extends Component{
                 ...currentMessages,
                 new ChatGroup(currentMessages.length, "outgoing", [msg])
             ]}, () =>{
-                setTimeout(this.receiveNextMessage, 1000);
+
+                //send query to Watson and handle response
+                discovery.query(queryParams)
+                .then(queryResponse => {
+
+                    var resp = queryResponse
+                    
+                    //resp_dict is a dictionary containting each result's id and it's respective confidence score (in decending order) - May be useful later
+                    var resp_dict = new Map()
+                    for(var i = 0; i < resp.result.results.length; i++) {
+                        resp_dict.set(resp.result.results[i].id, resp.result.results[i].result_metadata.confidence)
+                    }
+                    console.log(resp_dict)
+
+                    //Take first result (result with highest conf score)
+                    resp = JSON.stringify(queryResponse.result.results[0].text.replace(/\n/g, " "))
+                    //Print all results
+                    console.log(JSON.stringify(queryResponse.result.results, null, 2));
+
+                    //Currently result is a massive extract with very little value, need to figure out how to summarize in to a sentence. Also, conf scores are very low (<0.1) so need to improve that too.
+                    setTimeout(this.receiveNextMessage(resp), 1000);
+
+                })
+                .catch(err => {
+                    //Handle when Watson couldn't understand query
+                    setTimeout(this.receiveNextMessage("error"), 1000);
+                    console.log('error:', err);
+                });
             });
         }
         this.setState({typingIndicator: new TypingIndicator("IBM chatbot is typing")});
+    
     };
 
     render(){
