@@ -8,7 +8,9 @@ import {
     TypingIndicator,
     MessageInput,
 } from "@chatscope/chat-ui-kit-react";
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component } from 'react';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
 //Initialize Watson instance
 const DiscoveryV1 = require('ibm-watson/discovery/v1');
@@ -41,27 +43,6 @@ const initialMessages = [new ChatGroup(0, "incoming", [
     new ChatMessage(0, "Hello, thank you for using IBM's chatbot assistance tool."),
     new ChatMessage(1, "What would you like to know about IBM Cloud for Financial Services?")
 ])]
-
-const fakeMessages = [
-    new ChatGroup(1, "incoming", [
-        new ChatMessage(0,
-            "The IBM Cloud for Financial Services is a cloud designed to build trust and enable a transparent public cloud ecosystem with the specific features for security, compliance and resiliency that financial institutions require."
-        ),
-        new ChatMessage(1,
-            "Does this answer your question?"
-        )
-    ]),
-    new ChatGroup(2, "incoming", [
-        new ChatMessage(0,
-            "You're welcome. Any other questions?"
-        )
-    ]),
-    new ChatGroup(3, "incoming", [
-        new ChatMessage(0,
-            "Good to hear. Have a great day!"
-        )
-    ])
-]
 
 class Chat extends Component{
     constructor(props){
@@ -103,6 +84,22 @@ class Chat extends Component{
         })
         }
     }
+    
+    saveFunction = () => {
+        // get elemnt for saving file
+        const element = document.createElement("a");
+        // get data from object and use JSON.stringify to convert to text
+        const file = new Blob([JSON.stringify(this.state.currentMessages)], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        
+        // get current time and date for use in filename
+        let currentTime = new Date().toLocaleString();
+    
+        // download file to users local storage
+        element.download = "transcipt_" + currentTime +".json";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+    }
 
     handleSend = (text) => {
         //initialize query parameters
@@ -110,7 +107,8 @@ class Chat extends Component{
             environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
             collectionId: '2e651944-431c-4dbc-b407-716036caea75',
             configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
-            naturalLanguageQuery: text
+            naturalLanguageQuery: text,
+            passagesFields: 'text, subtitles, titles'
             };
         const msgs = this.state.currentMessages
         const id = msgs.length;
@@ -140,9 +138,30 @@ class Chat extends Component{
                         resp_dict.set(resp.result.results[i].id, resp.result.results[i].result_metadata.confidence)
                     }
                     console.log(resp_dict)
+                    console.log(resp.result.session_token)
+                    
+                    var current = 0 //needed incase we loop through responses
+                    const createEventParams = {
+                        type: 'click',
+                        data: {
+                          environment_id: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
+                          session_token: resp.result.session_token,
+                          collection_id: '2e651944-431c-4dbc-b407-716036caea75',
+                          document_id: resp.result.results[current].id,
+                        }
+                      };
+                      
+                    discovery.createEvent(createEventParams)
+                        .then(createEventResponse => {
+                          console.log(JSON.stringify(createEventResponse, null, 2));
+                        })
+                        .catch(err => {
+                          console.log('error:', err);
+                        });
 
                     //Take first result (result with highest conf score)
                     resp = JSON.stringify(queryResponse.result.results[0].text.replace(/\n/g, " "))
+
                     //Print all results
                     console.log(JSON.stringify(queryResponse.result.results, null, 2));
 
@@ -164,21 +183,31 @@ class Chat extends Component{
     render(){
         const {currentMessages, typingIndicator} = this.state;
         return (
-            <MainContainer style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
-                <ChatContainer>
-                    <MessageList typingIndicator={typingIndicator}>
-                        {currentMessages.map(g => <MessageGroup key={g.id} direction={g.direction}>
-                            <MessageGroup.Messages>
-                                {g.messages.map(m => <Message key={m.id} model={{
-                                    type: "html",
-                                    payload: m.content
-                                }}/>)}
-                            </MessageGroup.Messages>
-                        </MessageGroup>)}
-                    </MessageList>
-                    <MessageInput onSend={this.handleSend} placeholder="Type message here" />
-                </ChatContainer>
-            </MainContainer>
+            <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
+                <Stack direction="row" spacing={2}>
+                    <Button variant="outlined" onClick={() => {this.saveFunction();}}>Export Current Chat</Button>
+
+                    <input type="file" accept="text/*" style={{ display: 'none' }} id="contained-button-file"/>
+                    <label htmlFor="contained-button-file">
+                        <Button variant="outlined" component="span"> Load Previous Chat </Button>
+                    </label>
+                </Stack>
+                <MainContainer>
+                    <ChatContainer>
+                        <MessageList typingIndicator={typingIndicator}>
+                            {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
+                                <MessageGroup.Messages>
+                                    {g.messages.map((m) => <Message key={m.id} model={{
+                                        type: "html",
+                                        payload: m.content
+                                    }} />)}
+                                </MessageGroup.Messages>
+                            </MessageGroup>)}
+                        </MessageList>
+                        <MessageInput onSend={this.handleSend} placeholder="Type message here" />
+                    </ChatContainer>
+                </MainContainer>
+            </Stack>
         )
     }
 }
