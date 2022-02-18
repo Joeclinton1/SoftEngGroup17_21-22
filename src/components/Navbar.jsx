@@ -10,10 +10,6 @@ const Title = () =>{
     switch(useLocation().pathname){
         case "/":
             return "Chat";
-        case "/admin":
-            return "Admin";
-        case "/saved-chats":
-            return "Saved Chats";
         case "/options":
             return "Options";
         default:
