@@ -4,9 +4,7 @@ import DrawerHeader from "./DrawerHeader";
 import { ListItem, ListItemIcon, ListItemText, Divider, IconButton, List, Drawer } from '@mui/material';
 import {Link} from "react-router-dom"
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import AdminIcon from '@mui/icons-material/AdminPanelSettings';
 import ChatIcon from '@mui/icons-material/Chat';
-import FolderIcon from '@mui/icons-material/FolderSpecial';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;

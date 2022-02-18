@@ -1,4 +1,3 @@
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MainContainer,
     ChatContainer,
@@ -8,7 +7,7 @@ import {
     TypingIndicator,
     MessageInput,
 } from "@chatscope/chat-ui-kit-react";
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
@@ -43,27 +42,6 @@ const initialMessages = [new ChatGroup(0, "incoming", [
     new ChatMessage(0, "Hello, thank you for using IBM's chatbot assistance tool."),
     new ChatMessage(1, "What would you like to know about IBM Cloud for Financial Services?")
 ])]
-
-const fakeMessages = [
-    new ChatGroup(1, "incoming", [
-        new ChatMessage(0,
-            "The IBM Cloud for Financial Services is a cloud designed to build trust and enable a transparent public cloud ecosystem with the specific features for security, compliance and resiliency that financial institutions require."
-        ),
-        new ChatMessage(1,
-            "Does this answer your question?"
-        )
-    ]),
-    new ChatGroup(2, "incoming", [
-        new ChatMessage(0,
-            "You're welcome. Any other questions?"
-        )
-    ]),
-    new ChatGroup(3, "incoming", [
-        new ChatMessage(0,
-            "Good to hear. Have a great day!"
-        )
-    ])
-]
 
 class Chat extends Component{
     constructor(props){
