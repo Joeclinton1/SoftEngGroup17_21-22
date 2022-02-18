@@ -9,6 +9,8 @@ import {
     MessageInput,
 } from "@chatscope/chat-ui-kit-react";
 import React, { Component, useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
 //Initialize Watson instance
 const DiscoveryV1 = require('ibm-watson/discovery/v1');
@@ -102,6 +104,22 @@ class Chat extends Component{
         })
         }
     }
+    
+    saveFunction = () => {
+        // get elemnt for saving file
+        const element = document.createElement("a");
+        // get data from object and use JSON.stringify to convert to text
+        const file = new Blob([JSON.stringify(this.state.currentMessages)], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        
+        // get current time and date for use in filename
+        let currentTime = new Date().toLocaleString();
+    
+        // download file to users local storage
+        element.download = "transcipt_" + currentTime +".json";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+    }
 
     handleSend = (text) => {
         console.log(text)
@@ -187,21 +205,31 @@ class Chat extends Component{
     render(){
         const {currentMessages, typingIndicator} = this.state;
         return (
-            <MainContainer style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
-                <ChatContainer>
-                    <MessageList typingIndicator={typingIndicator}>
-                        {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
-                            <MessageGroup.Messages>
-                                {g.messages.map((m) => <Message key={m.id} model={{
-                                    type: "html",
-                                    payload: m.content
-                                }} />)}
-                            </MessageGroup.Messages>
-                        </MessageGroup>)}
-                    </MessageList>
-                    <MessageInput onSend={this.handleSend} placeholder="Type message here" />
-                </ChatContainer>
-            </MainContainer>
+            <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
+                <Stack direction="row" spacing={2}>
+                    <Button variant="outlined" onClick={() => {this.saveFunction();}}>Export Current Chat</Button>
+
+                    <input type="file" accept="text/*" style={{ display: 'none' }} id="contained-button-file"/>
+                    <label htmlFor="contained-button-file">
+                        <Button variant="outlined" component="span"> Load Previous Chat </Button>
+                    </label>
+                </Stack>
+                <MainContainer>
+                    <ChatContainer>
+                        <MessageList typingIndicator={typingIndicator}>
+                            {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
+                                <MessageGroup.Messages>
+                                    {g.messages.map((m) => <Message key={m.id} model={{
+                                        type: "html",
+                                        payload: m.content
+                                    }} />)}
+                                </MessageGroup.Messages>
+                            </MessageGroup>)}
+                        </MessageList>
+                        <MessageInput onSend={this.handleSend} placeholder="Type message here" />
+                    </ChatContainer>
+                </MainContainer>
+            </Stack>
         )
     }
 }
