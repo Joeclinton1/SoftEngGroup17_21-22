@@ -110,7 +110,8 @@ class Chat extends Component{
             environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
             collectionId: '2e651944-431c-4dbc-b407-716036caea75',
             configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
-            naturalLanguageQuery: text
+            naturalLanguageQuery: text,
+            passagesFields: 'text, subtitles, titles'
             };
         
         const {currentMessages} = this.state
@@ -141,9 +142,30 @@ class Chat extends Component{
                         resp_dict.set(resp.result.results[i].id, resp.result.results[i].result_metadata.confidence)
                     }
                     console.log(resp_dict)
+                    console.log(resp.result.session_token)
+                    
+                    var current = 0 //needed incase we loop through responses
+                    const createEventParams = {
+                        type: 'click',
+                        data: {
+                          environment_id: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
+                          session_token: resp.result.session_token,
+                          collection_id: '2e651944-431c-4dbc-b407-716036caea75',
+                          document_id: resp.result.results[current].id,
+                        }
+                      };
+                      
+                    discovery.createEvent(createEventParams)
+                        .then(createEventResponse => {
+                          console.log(JSON.stringify(createEventResponse, null, 2));
+                        })
+                        .catch(err => {
+                          console.log('error:', err);
+                        });
 
                     //Take first result (result with highest conf score)
                     resp = JSON.stringify(queryResponse.result.results[0].text.replace(/\n/g, " "))
+
                     //Print all results
                     console.log(JSON.stringify(queryResponse.result.results, null, 2));
 
