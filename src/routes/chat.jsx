@@ -85,6 +85,7 @@ class Chat extends Component{
                 ]),
             ]
         })
+        console.log(this.state.currentMessages)
         } else {
             this.setState({typingIndicator: 0});
             this.setState({currentMessages: [
@@ -104,7 +105,6 @@ class Chat extends Component{
     }
 
     handleSend = (text) => {
-        console.log(text)
         //initialize query parameters
         const queryParams = {
             environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
@@ -112,23 +112,22 @@ class Chat extends Component{
             configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
             naturalLanguageQuery: text
             };
-        
-        const {currentMessages} = this.state
-        const id = currentMessages.length;
+        const msgs = this.state.currentMessages
+        const id = msgs.length;
         const msg = new ChatMessage(id, text);
-        const lastGroup = currentMessages[currentMessages.length - 1]
+        const lastGroup = msgs[msgs.length - 1]
         if (lastGroup.direction === "outgoing") {
             lastGroup.messages.push(msg);
             this.setState({currentMessages: [
-                ...currentMessages.slice(0, -1),
+                ...msgs.slice(0, -1),
                 lastGroup
             ]});
         } else {
+            console.log(msgs)
             this.setState({currentMessages: [
-                ...currentMessages,
-                new ChatGroup(currentMessages.length, "outgoing", [msg])
+                ...msgs,
+                new ChatGroup(msgs.length, "outgoing", [msg])
             ]}, () =>{
-
                 //send query to Watson and handle response
                 discovery.query(queryParams)
                 .then(queryResponse => {
@@ -158,7 +157,7 @@ class Chat extends Component{
                 });
             });
         }
-        this.setState({typingIndicator: new TypingIndicator("IBM chatbot is typing")});
+        this.setState({typingIndicator: <TypingIndicator content="IBM chatbot is typing"/>});
     
     };
 
@@ -168,12 +167,12 @@ class Chat extends Component{
             <MainContainer style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
                 <ChatContainer>
                     <MessageList typingIndicator={typingIndicator}>
-                        {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
+                        {currentMessages.map(g => <MessageGroup key={g.id} direction={g.direction}>
                             <MessageGroup.Messages>
-                                {g.messages.map((m) => <Message key={m.id} model={{
+                                {g.messages.map(m => <Message key={m.id} model={{
                                     type: "html",
                                     payload: m.content
-                                }} />)}
+                                }}/>)}
                             </MessageGroup.Messages>
                         </MessageGroup>)}
                     </MessageList>
