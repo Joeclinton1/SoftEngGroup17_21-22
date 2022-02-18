@@ -45,8 +45,8 @@ class Options extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(id, event){
-        this.setState({id: event.target.value});
+    handleChange = (id, event)=>{
+        this.setState({[id]: event.target.value});
     }
 
     render() {
