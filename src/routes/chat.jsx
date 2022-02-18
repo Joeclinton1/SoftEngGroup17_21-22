@@ -1,3 +1,4 @@
+import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MainContainer,
     ChatContainer,
@@ -187,7 +188,7 @@ class Chat extends Component{
                 <Stack direction="row" spacing={2}>
                     <Button variant="outlined" onClick={() => {this.saveFunction();}}>Export Current Chat</Button>
 
-                    <input type="file" accept="text/*" style={{ display: 'none' }} id="contained-button-file"/>
+                    <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file"/>
                     <label htmlFor="contained-button-file">
                         <Button variant="outlined" component="span"> Load Previous Chat </Button>
                     </label>
