@@ -53,6 +53,30 @@ class Chat extends Component{
         }
     }
 
+    getFile = async (e) => {
+        e.preventDefault()
+        const reader = new FileReader()
+
+        reader.onload = async (e) => { 
+            const text = (e.target.result)
+            let jsonParse = JSON.parse(text)
+            let newMessages = []
+            
+            for (let i=0; i < jsonParse.length; i++) {
+                let messagesToAdd = []
+
+                for (let j=0; j < jsonParse[i].messages.length; j++) {
+                    messagesToAdd.push(new ChatMessage(jsonParse[i].messages[j].id, jsonParse[i].messages[j].content))
+                }
+                
+                newMessages.push(new ChatGroup(jsonParse[i].id, jsonParse[i].direction, messagesToAdd))
+            }
+
+            this.setState({ currentMessages: newMessages })
+        };
+        reader.readAsText(e.target.files[0])
+    }
+
     receiveNextMessage = (resp) => {
         if(resp === "error"){
             this.setState({typingIndicator: 0});
@@ -94,9 +118,13 @@ class Chat extends Component{
         
         // get current time and date for use in filename
         let currentTime = new Date().toLocaleString();
+        console.log(currentTime.substring(0, 10))
+        console.log(currentTime.substring(12))
+
+        let timeFormatted = currentTime.substring(0, 10) + "_" + currentTime.substring(12)
     
         // download file to users local storage
-        element.download = "transcipt_" + currentTime +".json";
+        element.download = "transcipt_" + timeFormatted +".json";
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
     }
@@ -187,9 +215,9 @@ class Chat extends Component{
                 <Stack direction="row" spacing={2}>
                     <Button variant="outlined" onClick={() => {this.saveFunction();}}>Export Current Chat</Button>
 
-                    <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file"/>
+                    <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file" onChange={(e) => this.getFile(e)}/>
                     <label htmlFor="contained-button-file">
-                        <Button variant="outlined" component="span"> Load Previous Chat </Button>
+                        <Button variant="outlined" component="span" > Load Previous Chat </Button>
                     </label>
                 </Stack>
                 <MainContainer>
