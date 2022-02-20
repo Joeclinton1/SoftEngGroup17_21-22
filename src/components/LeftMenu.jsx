@@ -6,6 +6,7 @@ import {Link} from "react-router-dom"
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChatIcon from '@mui/icons-material/Chat';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HomeIcon from '@mui/icons-material/Home';
 
 const drawerWidth = 240;
 
@@ -40,6 +41,10 @@ export default function LetftMenu(props) {
                     <ChevronLeftIcon />
                 </IconButton>
             </DrawerHeader>
+            <Divider />
+            <List>
+                <MenuListItem text="Home" icon={<HomeIcon />} to="home" />
+            </List>
             <Divider />
             <List>
                 <MenuListItem text="Chat" icon={<ChatIcon />} to="/" />

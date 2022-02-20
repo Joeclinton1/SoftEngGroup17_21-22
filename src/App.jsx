@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Chat from "./routes/chat"
 import Options from "./routes/options"
+import Home from "./routes/home"
 import NavBar from "./components/Navbar"
 import LeftMenu from "./components/LeftMenu"
 import DrawerHeader from "./components/DrawerHeader";
@@ -65,6 +66,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Chat />} />
                             <Route path="/options" element={<Options />} />
+                            <Route path="/home" element={<Home />} />
                         </Routes>
                     </div>
                 </Main>

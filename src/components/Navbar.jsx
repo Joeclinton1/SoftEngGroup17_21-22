@@ -12,6 +12,8 @@ const Title = () =>{
             return "Chat";
         case "/options":
             return "Options";
+        case "/home":
+            return "Home";
         default:
             return "";
     }
