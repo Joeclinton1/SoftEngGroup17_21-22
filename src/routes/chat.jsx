@@ -78,7 +78,8 @@ class Chat extends Component{
     }
 
     receiveNextMessage = (resp) => {
-        if(resp === "error"){
+        // if Watson returned no results
+        if(resp === "empty"){
             this.setState({typingIndicator: 0});
             this.setState({currentMessages: [
                 
@@ -90,11 +91,10 @@ class Chat extends Component{
                 ]),
             ]
         })
-        console.log(this.state.currentMessages)
         } else {
+            //Display answer in chat component
             this.setState({typingIndicator: 0});
             this.setState({currentMessages: [
-                
                 ...this.state.currentMessages,
                 new ChatGroup(1, "incoming", [
                     new ChatMessage(0,
@@ -129,15 +129,45 @@ class Chat extends Component{
         element.click();
     }
 
+    //Get request to send query
+    callWD(text) {
+        fetch("/queryWD?qtext=".concat(text))
+            .then(res => res.json())
+            .then(res => {
+                // If Watson returns no results
+                // Need to be able to handle when Watson returns a JSON with different structure then usual (e.g. response to query: Who are you)
+                if (res.result.matching_results == 0){
+                    setTimeout(this.receiveNextMessage('empty'), 1000)
+                } else {
+                    var resultWD = res.result.passages[0].passage_text
+                    
+                    //Relevancy code
+                    const createEventParams = {
+                        type: 'click',
+                        data: {
+                          environment_id: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
+                          session_token: res.result.session_token,
+                          collection_id: '2e651944-431c-4dbc-b407-716036caea75',
+                          document_id: res.result.passages[0].document_id,
+                        }
+                      };
+
+                    discovery.createEvent(createEventParams)
+                        .then(createEventResponse => {
+                          console.log(JSON.stringify(createEventResponse, null, 2));
+                        })
+                        .catch(err => {
+                          console.log('error:', err);
+                        });
+                    
+                    //Send results to recieveNextMessage
+                    setTimeout(this.receiveNextMessage(resultWD), 1000)
+                }
+            })
+            .catch(err => err);
+    }
+
     handleSend = (text) => {
-        //initialize query parameters
-        const queryParams = {
-            environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
-            collectionId: '2e651944-431c-4dbc-b407-716036caea75',
-            configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
-            naturalLanguageQuery: text,
-            passagesFields: 'text, subtitles, titles'
-            };
         const msgs = this.state.currentMessages
         const id = msgs.length;
         const msg = new ChatMessage(id, text);
@@ -155,57 +185,10 @@ class Chat extends Component{
                 new ChatGroup(msgs.length, "outgoing", [msg])
             ]}, () =>{
                 //send query to Watson and handle response
-                discovery.query(queryParams)
-                .then(queryResponse => {
-
-                    var resp = queryResponse
-                    
-                    //resp_dict is a dictionary containting each result's id and it's respective confidence score (in decending order) - May be useful later
-                    var resp_dict = new Map()
-                    for(var i = 0; i < resp.result.results.length; i++) {
-                        resp_dict.set(resp.result.results[i].id, resp.result.results[i].result_metadata.confidence)
-                    }
-                    console.log(resp_dict)
-                    console.log(resp.result.session_token)
-                    
-                    var current = 0 //needed incase we loop through responses
-                    const createEventParams = {
-                        type: 'click',
-                        data: {
-                          environment_id: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
-                          session_token: resp.result.session_token,
-                          collection_id: '2e651944-431c-4dbc-b407-716036caea75',
-                          document_id: resp.result.results[current].id,
-                        }
-                      };
-                      
-                    discovery.createEvent(createEventParams)
-                        .then(createEventResponse => {
-                          console.log(JSON.stringify(createEventResponse, null, 2));
-                        })
-                        .catch(err => {
-                          console.log('error:', err);
-                        });
-
-                    //Take first result (result with highest conf score)
-                    resp = JSON.stringify(queryResponse.result.results[0].text.replace(/\n/g, " "))
-
-                    //Print all results
-                    console.log(JSON.stringify(queryResponse.result.results, null, 2));
-
-                    //Currently result is a massive extract with very little value, need to figure out how to summarize in to a sentence. Also, conf scores are very low (<0.1) so need to improve that too.
-                    setTimeout(this.receiveNextMessage(resp), 1000);
-
-                })
-                .catch(err => {
-                    //Handle when Watson couldn't understand query
-                    setTimeout(this.receiveNextMessage("error"), 1000);
-                    console.log('error:', err);
-                });
+                this.callWD(text)
             });
         }
         this.setState({typingIndicator: <TypingIndicator content="IBM chatbot is typing"/>});
-    
     };
 
     render(){
