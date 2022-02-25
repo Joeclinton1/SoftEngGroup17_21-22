@@ -122,14 +122,14 @@ class Chat extends Component{
     }
 
     handleSend = (text) => {
-        console.log(text)
         //initialize query parameters
         const queryParams = {
             environmentId: '8b58da18-58c8-49eb-b5d4-4cbc7d7f58fa',
             collectionId: '2e651944-431c-4dbc-b407-716036caea75',
             configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
             naturalLanguageQuery: text,
-            passagesFields: 'text, subtitles, titles'
+            passages: true,
+            passagesFields: 'text, subtitles'
             };
         
         const {currentMessages} = this.state
@@ -153,6 +153,8 @@ class Chat extends Component{
                 .then(queryResponse => {
 
                     var resp = queryResponse
+                    console.log(resp)
+                    console.log(resp.result.passages[0].passage_text)
                     
                     //resp_dict is a dictionary containting each result's id and it's respective confidence score (in decending order) - May be useful later
                     var resp_dict = new Map()
@@ -160,7 +162,6 @@ class Chat extends Component{
                         resp_dict.set(resp.result.results[i].id, resp.result.results[i].result_metadata.confidence)
                     }
                     console.log(resp_dict)
-                    console.log(resp.result.session_token)
                     
                     var current = 0 //needed incase we loop through responses
                     const createEventParams = {
