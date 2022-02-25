@@ -35,6 +35,7 @@ const DynamicSelect = ({id, label, state, handleChange, MenuItems}) => (
 class Options extends Component {
     constructor(props) {
         super(props);
+        this.setOptions = this.props.setOptions
         this.state = {
             fontSize: 20,
             chatColour: 'b',
@@ -47,6 +48,7 @@ class Options extends Component {
 
     handleChange = (id, event)=>{
         this.setState({[id]: event.target.value});
+        this.setOptions(this.state)
     }
 
     render() {

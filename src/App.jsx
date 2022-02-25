@@ -7,7 +7,8 @@ import LeftMenu from "./components/LeftMenu"
 import DrawerHeader from "./components/DrawerHeader";
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { styled} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import { defaultOptions, OptionsContext } from "./components/OptionsContext";
 import {
     BrowserRouter as Router,
     Routes,
@@ -15,6 +16,9 @@ import {
 } from "react-router-dom"
 
 const drawerWidth = 240;
+
+// context options
+
 
 const Main = styled('main')(
     ({ theme, open }) => ({
@@ -38,6 +42,7 @@ const Main = styled('main')(
 
 function App() {
     const [open, setOpen] = React.useState(false);
+    const [options, setOptions] = React.useState(defaultOptions)
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -48,30 +53,32 @@ function App() {
     };
 
     return (
-        <Router>
-            <Box sx={{ display: 'flex', height: '100vh'}}>
-                <CssBaseline />
-                <NavBar handleDrawerOpen={handleDrawerOpen} />
-                <LeftMenu handleDrawerClose={handleDrawerClose} open={open} />
+        <OptionsContext.Provider value={options}>
+            <Router>
+                <Box sx={{ display: 'flex', height: '100vh' }}>
+                    <CssBaseline />
+                    <NavBar handleDrawerOpen={handleDrawerOpen} />
+                    <LeftMenu handleDrawerClose={handleDrawerClose} open={open} />
 
-                <Main open={open} style = {{padding: '0px'}}>
-                    <DrawerHeader />
-                    <div style={{
-                        display: "flex",
-                        padding: '24px',
-                        justifyContent: "center",
-                        height: "calc(100vh - 64px)",
-                        margin: "auto"
+                    <Main open={open} style={{ padding: '0px' }}>
+                        <DrawerHeader />
+                        <div style={{
+                            display: "flex",
+                            padding: '24px',
+                            justifyContent: "center",
+                            height: "calc(100vh - 64px)",
+                            margin: "auto"
                         }}>
-                        <Routes>
-                            <Route path="/" element={<Chat />} />
-                            <Route path="/options" element={<Options />} />
-                            <Route path="/home" element={<Home />} />
-                        </Routes>
-                    </div>
-                </Main>
-            </Box>
-        </Router>
+                            <Routes>
+                                <Route path="/" element={<Chat />} />
+                                <Route path="/options" element={<Options setOptions = {setOptions}/>} />
+                                <Route path="/home" element={<Home />} />
+                            </Routes>
+                        </div>
+                    </Main>
+                </Box>
+            </Router>
+        </OptionsContext.Provider>
     );
 }
 
