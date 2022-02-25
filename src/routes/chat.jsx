@@ -116,7 +116,7 @@ class Chat extends Component {
         // get elemnt for saving file
         const element = document.createElement("a");
         // get data from object and use JSON.stringify to convert to text
-        const file = new Blob([JSON.stringify(this.state.currentMessages)], { type: 'text/plain' });
+        const file = new Blob([JSON.stringify(this.state.currentMessages, null, 4)], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
 
         // get current time and date for use in filename
