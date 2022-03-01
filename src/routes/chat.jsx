@@ -81,12 +81,13 @@ class Chat extends Component {
 
     receiveNextMessage = (resp) => {
         // if Watson returned no results
+        var key = this.state.currentMessages.length
         if (resp === "empty") {
             this.setState({ typingIndicator: 0 });
             this.setState({
                 currentMessages: [
                     ...this.state.currentMessages,
-                    new ChatGroup(1, "incoming", [
+                    new ChatGroup(key, "incoming", [
                         new ChatMessage(0,
                             "I'm sorry, I couldn't understand. Could you please rephrase the question?"
                         )
@@ -95,25 +96,26 @@ class Chat extends Component {
             })
         } else {
             //Display answer in chat component
+            
             this.setState({ typingIndicator: 0 });
             for(let i =0; i<resp.length; i++){
                 this.setState({
                     currentMessages: [
                         ...this.state.currentMessages,
-                        new ChatGroup(1, "incoming", [
-    
-                            new ChatMessage(i,
+                        new ChatGroup(key, "incoming", [
+                            new ChatMessage(0,
                                 resp[i].substring(0, 300)
                                 ),
                         ]),
                     ]
                 }) 
+                key = key + 1
             }
             this.setState({ 
                 currentMessages: [
                     ...this.state.currentMessages,
-                    new ChatGroup(1, "incoming", [
-                        new ChatMessage(1,
+                    new ChatGroup(key, "incoming", [
+                        new ChatMessage(0,
                             "Does this answer your question?"
                         )
                     ]),
@@ -157,7 +159,6 @@ class Chat extends Component {
                     var resultDI = res.result.passages[0].document_id
 
                     var rtext_in = resultST.concat('^').concat(resultDI)
-
                     //Relevancy code (Moved to backend i.e. app.js)
                     fetch("/relev?rtext=".concat(rtext_in))
                         .then(res => console.log(res))
