@@ -90,7 +90,7 @@ function App() {
                             margin: "auto"
                         }}>
                             <Routes>
-                                <Route path="/" element={<Chat />} />
+                                <Route path="/" element={<Chat cookies = {cookies}/>} />
                                 <Route path="/options" element={<Options setOptions = {setOptions} cookies = {cookies} />} />
                                 <Route path="/home" element={<Home />} />
                             </Routes>
