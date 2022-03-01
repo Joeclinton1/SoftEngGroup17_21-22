@@ -6,12 +6,13 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 
-const DynamicSelect = ({id, label, state, handleChange, MenuItems}) => (
+const DynamicSelect = ({id, label, state, changeCookie, handleChange, MenuItems}) => (
     /*
     id: a unique name to describe the form input
     label: the human readable name that will be displayed
     value: the value connected to the state
     handleChange: function to be called on value change
+    changeCookie: function to be called to update cookie values
     MenuItems: list of (value, label) pairs    
     */
     <FormControl fullWidth>
@@ -23,6 +24,7 @@ const DynamicSelect = ({id, label, state, handleChange, MenuItems}) => (
             label={label}
             onChange={(event)=>{
                 handleChange(id, event)
+                changeCookie(id, event.target.value)
             }}
         >
         {MenuItems.map(([value,label], index) =>(
@@ -36,12 +38,13 @@ class Options extends Component {
     constructor(props) {
         super(props);
         this.setOptions = this.props.setOptions
+        this.cookies = this.props.cookies
         this.state = {
-            fontSize: 20,
-            chatColour: 'b',
-            lang: 0,
-            numResults: 1,
-            isSummarised: 1
+            fontSize: this.cookies.get('fontSize'),
+            chatColour: this.cookies.get('chatColour'),
+            lang: this.cookies.get('lang'),
+            numResults: this.cookies.get('numResults'),
+            isSummarised: this.cookies.get('isSummarised')
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -49,6 +52,10 @@ class Options extends Component {
     handleChange = (id, event)=>{
         this.setState({[id]: event.target.value});
         this.setOptions(this.state)
+    }
+    
+    changeCookie = (id, value)=>{
+        this.cookies.set(id, value, { path: '/' })
     }
 
     render() {
@@ -67,6 +74,7 @@ class Options extends Component {
                     label = "Font Size"
                     state = {this.state}
                     handleChange = {this.handleChange}
+                    changeCookie = {this.changeCookie}
                     MenuItems = {[
                         [15,"15 px"],
                         [20,"20 px"],
@@ -79,6 +87,7 @@ class Options extends Component {
                     label = "Chat Colour"
                     state = {this.state}
                     handleChange = {this.handleChange}
+                    changeCookie = {this.changeCookie}
                     MenuItems = {[
                         ['r',"Red"],
                         ['g',"Green"],
@@ -92,6 +101,7 @@ class Options extends Component {
                     label = "Language"
                     state = {this.state}
                     handleChange = {this.handleChange}
+                    changeCookie = {this.changeCookie}
                     MenuItems = {[
                         "English",
                         "French",
@@ -105,6 +115,7 @@ class Options extends Component {
                     label = "Number of Results to Display"
                     state = {this.state}
                     handleChange = {this.handleChange}
+                    changeCookie = {this.changeCookie}
                     MenuItems = {[1,2,3,4,5].map(x => [x, x])}
                 />
 
@@ -113,6 +124,7 @@ class Options extends Component {
                     label = "Summarise Results?"
                     state = {this.state}
                     handleChange = {this.handleChange}
+                    changeCookie = {this.changeCookie}
                     MenuItems ={[
                         [1,"Yes"],
                         [0, "No"]
