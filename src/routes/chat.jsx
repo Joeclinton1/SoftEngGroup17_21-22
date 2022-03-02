@@ -58,6 +58,7 @@ class Chat extends Component{
             text = JSON.parse(window.localStorage.getItem("currentMessages"));
         }
         
+        this.cookies = this.props.cookies
         this.state = {
             currentMessages: text || initialMessages,
             typingIndicator: 0,
@@ -103,33 +104,46 @@ class Chat extends Component{
 
     receiveNextMessage = (resp) => {
         // if Watson returned no results
-        if(resp === "empty"){
-            this.setState({typingIndicator: 0});
-            this.setState({currentMessages: [
-                
-                ...this.state.currentMessages,
-                new ChatGroup(1, "incoming", [
-                    new ChatMessage(0,
-                        "I'm sorry, I couldn't understand. Could you please rephrase the question?"
-                    )
-                ]),
-            ]
-        })
+        var key = this.state.currentMessages.length
+        if (resp === "empty") {
+            this.setState({ typingIndicator: 0 });
+            this.setState({
+                currentMessages: [
+                    ...this.state.currentMessages,
+                    new ChatGroup(key, "incoming", [
+                        new ChatMessage(0,
+                            "I'm sorry, I couldn't understand. Could you please rephrase the question?"
+                        )
+                    ]),
+                ]
+            })
         } else {
             //Display answer in chat component
-            this.setState({typingIndicator: 0});
-            this.setState({currentMessages: [
-                ...this.state.currentMessages,
-                new ChatGroup(1, "incoming", [
-                    new ChatMessage(0,
-                        resp.substring(0, 300)
-                    ),
-                    new ChatMessage(1,
-                        "Does this answer your question?"
-                    )
-                ]),
-            ]
-        })
+            
+            this.setState({ typingIndicator: 0 });
+            for(let i =0; i<resp.length; i++){
+                this.setState({
+                    currentMessages: [
+                        ...this.state.currentMessages,
+                        new ChatGroup(key, "incoming", [
+                            new ChatMessage(0,
+                                resp[i].substring(0, 300)
+                                ),
+                        ]),
+                    ]
+                }) 
+                key = key + 1
+            }
+            this.setState({ 
+                currentMessages: [
+                    ...this.state.currentMessages,
+                    new ChatGroup(key, "incoming", [
+                        new ChatMessage(0,
+                            "Does this answer your question?"
+                        )
+                    ]),
+                ]
+            });
         }
         window.localStorage.setItem("currentMessages", JSON.stringify(this.state.currentMessages))
     }
@@ -164,20 +178,27 @@ class Chat extends Component{
                 if (res.result.matching_results == 0){
                     setTimeout(this.receiveNextMessage('empty'), 1000)
                 } else {
-                    var resultWD = res.result.passages[0].passage_text
+                    var resultWD = res.result.passages
                     var resultST = res.result.session_token
                     var resultDI = res.result.passages[0].document_id
 
                     var rtext_in = resultST.concat('^').concat(resultDI)
-                    //console.log(rtext_in)
-    
                     //Relevancy code (Moved to backend i.e. app.js)
                     fetch("/relev?rtext=".concat(rtext_in))
-                    .then(res => console.log())
+                        .then(res => console.log(res))
                     
-                    
+                    const numRes = this.cookies.get('numResults')
+                    if(resultWD.length < numRes){
+                        numRes = resultWD.length
+                    }
+
+                    const resArray = []
+                    for(let i = 0; i < numRes; i++){
+                        resArray.push(resultWD[i].passage_text)
+                    }
+
                     //Send results to recieveNextMessage
-                    setTimeout(this.receiveNextMessage(resultWD), 1000)
+                    setTimeout(this.receiveNextMessage(resArray), 1000)
                 }
             })
             .catch(err => err);
@@ -185,11 +206,9 @@ class Chat extends Component{
 
     handleSend = (text) => {
         const msgs = this.state.currentMessages
-        //console.log(msgs)
         const id = msgs.length;
         const msg = new ChatMessage(id, text);
         const lastGroup = msgs[msgs.length - 1]
-        //console.log(lastGroup)
         if (lastGroup.direction === "outgoing") {
             lastGroup.messages.push(msg);
             this.setState({currentMessages: [
@@ -197,11 +216,12 @@ class Chat extends Component{
                 lastGroup
             ]});
         } else {
-            //console.log(msgs)
-            this.setState({currentMessages: [
-                ...msgs,
-                new ChatGroup(msgs.length, "outgoing", [msg])
-            ]}, () =>{
+            this.setState({
+                currentMessages: [
+                    ...msgs,
+                    new ChatGroup(msgs.length, "outgoing", [msg])
+                ]
+            }, () => {
                 //send query to Watson and handle response
                 this.callWD(text)
             });

@@ -14,8 +14,11 @@ import {
     Routes,
     Route
 } from "react-router-dom"
+import Cookies from 'universal-cookie';
 
 const drawerWidth = 240;
+
+const cookies = new Cookies();
 
 // context options
 
@@ -44,6 +47,23 @@ function App() {
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState(defaultOptions)
 
+    //initialize default cookie values
+    if(cookies.get('fontSize') == null){
+        cookies.set('fontSize', 20, { path: '/' });
+    }
+    if(cookies.get('lang') == null){
+        cookies.set('lang', 0, { path: '/' });
+    }
+    if(cookies.get('chatColour') == null){
+        cookies.set('chatColour', 'b', { path: '/' });
+    }
+    if(cookies.get('numResults') == null){
+        cookies.set('numResults', 1, { path: '/' });
+    }
+    if(cookies.get('isSummarised') == null){
+        cookies.set('isSummarised', 1, { path: '/' });
+    }
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -70,8 +90,8 @@ function App() {
                             margin: "auto"
                         }}>
                             <Routes>
-                                <Route path="/" element={<Chat />} />
-                                <Route path="/options" element={<Options setOptions = {setOptions}/>} />
+                                <Route path="/" element={<Chat cookies = {cookies}/>} />
+                                <Route path="/options" element={<Options setOptions = {setOptions} cookies = {cookies} />} />
                                 <Route path="/home" element={<Home />} />
                             </Routes>
                         </div>
