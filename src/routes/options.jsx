@@ -42,7 +42,7 @@ class Options extends Component {
         this.state = {
             fontSize: this.cookies.get('fontSize'),
             chatColour: this.cookies.get('chatColour'),
-            lang: this.cookies.get('lang'),
+            // lang: this.cookies.get('lang'),
             numResults: this.cookies.get('numResults'),
             isSummarised: this.cookies.get('isSummarised')
         }
@@ -96,7 +96,7 @@ class Options extends Component {
                     ]}
                 />
 
-                <DynamicSelect 
+                {/* <DynamicSelect 
                     id = "lang"
                     label = "Language"
                     state = {this.state}
@@ -108,7 +108,7 @@ class Options extends Component {
                         "Spanish",
                         "German"
                     ].map((x,i) => [i, x])}
-                />
+                /> */}
 
                 <DynamicSelect 
                     id = "numResults"
