@@ -17,7 +17,7 @@ authenticator: new IamAuthenticator({
 serviceUrl: 'https://api.eu-gb.discovery.watson.cloud.ibm.com/instances/d874b546-9b02-4c6a-bc6c-3042fedb37be',
 });
 
-//Relevancy reqeust
+//Relevancy request
 app.get('/relev', (req,res) =>{
     var text = String(req.query.rtext)
     var split_text = text.split("^")
@@ -57,7 +57,7 @@ app.get('/queryWD', (req, res) => {
         collectionId: '2e651944-431c-4dbc-b407-716036caea75',
         configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
         naturalLanguageQuery: text,
-        passagesFields: 'text, subtitles, titles'
+        passagesFields: 'text, subtitle, title, question, answer' 
     };
 
     discovery.query(queryParams)
