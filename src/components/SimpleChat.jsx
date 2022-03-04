@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react"
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MainContainer,
@@ -38,7 +37,8 @@ export default function SimpleChat({currentMessages, typingIndicatorStatus, hand
                     data-num-results={options.numResults}
                     style={{
                         "fontSize": fontSizes[options.fontSize]
-                    }}>
+                    }}
+                    data-show-conf={options.showConf}>
                     <ChatContainer>
                         <MessageList typingIndicator={typingIndicator}>
                             {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>

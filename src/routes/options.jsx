@@ -44,6 +44,7 @@ class Options extends Component {
         this.state = {
             fontSize: 0,
             chatColour: 0,
+            showConf: 0,
             // lang: this.cookies.get('lang'),
             numResults: 0,
             isSummarised: 0
@@ -101,19 +102,17 @@ class Options extends Component {
                     ]}
                 />
 
-                {/* <DynamicSelect 
-                    id = "lang"
-                    label = "Language"
+                <DynamicSelect 
+                    id = "showConf"
+                    label = "Show Confidence score?"
                     state = {this.state}
                     handleChange = {this.handleChange}
                     changeCookie = {this.changeCookie}
-                    MenuItems = {[
-                        "English",
-                        "French",
-                        "Spanish",
-                        "German"
-                    ].map((x,i) => [i, x])}
-                /> */}
+                    MenuItems ={[
+                        [1,"Yes"],
+                        [0, "No"]
+                    ]}
+                />
 
                 <DynamicSelect 
                     id = "numResults"
