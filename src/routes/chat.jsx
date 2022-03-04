@@ -248,8 +248,8 @@ class Chat extends Component {
     fontSizes = {
         0: "0.8em",
         1: "1em",
-        2: "1.25em",
-        3: "1.5em"
+        2: "1.35em",
+        3: "1.7em"
     }
 
     chatColours = {
