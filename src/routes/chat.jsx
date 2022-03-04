@@ -1,17 +1,7 @@
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import {
-    MainContainer,
-    ChatContainer,
-    MessageList,
-    Message,
-    MessageGroup,
-    TypingIndicator,
-    MessageInput,
-} from "@chatscope/chat-ui-kit-react";
 import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { OptionsContext } from "../components/OptionsContext";
+import SimpleChat from "../components/SimpleChat"
 
 
 //Initialize Watson instance
@@ -62,7 +52,7 @@ class Chat extends Component {
         this.cookies = this.props.cookies
         this.state = {
             currentMessages: text || initialMessages,
-            typingIndicator: 0,
+            typingIndicatorStatus: false,
         }
 
         window.addEventListener('storage', (e) => this.storageChanged(e));
@@ -77,7 +67,7 @@ class Chat extends Component {
         }
     }
 
-    colourChat = () =>{
+    colourChat = () => {
         const chatContainer = document.getElementsByClassName("cs-main-container")[0];
         const colour = chatContainer.getAttribute("data-colour")
         const selectors = [
@@ -92,8 +82,8 @@ class Chat extends Component {
             }
         })
     }
-    componentDidMount = () => {this.colourChat()}
-    componentDidUpdate = () => {this.colourChat()}
+    componentDidMount = () => { this.colourChat() }
+    componentDidUpdate = () => { this.colourChat() }
 
     getFile = async (e) => {
         e.preventDefault()
@@ -124,7 +114,7 @@ class Chat extends Component {
         // if Watson returned no results
         var key = this.state.currentMessages.length
         if (resp === "empty") {
-            this.setState({ typingIndicator: 0 });
+            this.setState({ typingIndicatorStatus: false });
             this.setState({
                 currentMessages: [
                     ...this.state.currentMessages,
@@ -138,7 +128,7 @@ class Chat extends Component {
         } else {
             //Display answer in chat component
 
-            this.setState({ typingIndicator: 0 });
+            this.setState({ typingIndicatorStatus: false });
             for (let i = 0; i < resp.length; i++) {
                 this.setState({
                     currentMessages: [
@@ -204,9 +194,9 @@ class Chat extends Component {
                     //Relevancy code (Moved to backend i.e. app.js)
                     fetch("/relev?rtext=".concat(rtext_in))
                         .then(res => console.log(res))
-                    
-                    const numRes =  document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
-                    const resArray = resultWD.map((res)=>res.passage_text).slice(0,numRes)
+
+                    const numRes = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
+                    const resArray = resultWD.map((res) => res.passage_text).slice(0, numRes)
                     console.log(resArray)
                     //Send results to recieveNextMessage
                     setTimeout(this.receiveNextMessage(resArray), 1000)
@@ -240,64 +230,26 @@ class Chat extends Component {
             });
         }
         window.localStorage.setItem("currentMessages", JSON.stringify(this.state.currentMessages))
-        this.setState({ typingIndicator: <TypingIndicator content="IBM chatbot is typing" /> });
+        this.setState({ typingIndicatorStatus: true});
         //console.log(JSON.parse(window.localStorage.getItem("currentMessages")))
     };
 
-    //  options of styles to be selected by option.
-    fontSizes = {
-        0: "0.8em",
-        1: "1em",
-        2: "1.35em",
-        3: "1.7em"
-    }
-
-    chatColours = {
-        'r': '#fac6c6',
-        'b': '#c6e3fa',
-        'g': '#c6facc',
-        'y': '#faf8c6',
-    }
-
     render() {
-        const { currentMessages, typingIndicator } = this.state;
-
         return (
-            <OptionsContext.Consumer>
-                {options => (
-                    <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
-                        <Stack direction="row" spacing={2}>
-                            <Button variant="outlined" onClick={() => { this.saveFunction(); }}>Export Current Chat</Button>
-
-                            <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file" onChange={(e) => this.getFile(e)} />
-                            <label htmlFor="contained-button-file">
-                                <Button variant="outlined" component="span" > Load Previous Chat </Button>
-                            </label>
-                        </Stack>
-                        <MainContainer
-                            data-colour={this.chatColours[options.chatColour]}
-                            data-num-results={options.numResults}
-                            style={{
-                                "fontSize": this.fontSizes[options.fontSize]
-                            }}>
-                            <ChatContainer>
-                                <MessageList typingIndicator={typingIndicator}>
-                                    {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
-                                        <MessageGroup.Messages>
-                                            {g.messages.map((m) =>
-                                                <Message key={m.id} model={{
-                                                    type: "html",
-                                                    payload: m.content
-                                                }} />
-                                            )}
-                                        </MessageGroup.Messages>
-                                    </MessageGroup>)}
-                                </MessageList>
-                                <MessageInput onSend={this.handleSend} placeholder="Type message here" />
-                            </ChatContainer>
-                        </MainContainer>
-                    </Stack>)}
-            </OptionsContext.Consumer>
+            <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
+                <Stack direction="row" spacing={2}>
+                    <Button variant="outlined" onClick={() => { this.saveFunction(); }}>Export Current Chat</Button>
+                    <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file" onChange={(e) => this.getFile(e)} />
+                    <label htmlFor="contained-button-file">
+                        <Button variant="outlined" component="span" > Load Previous Chat </Button>
+                    </label>
+                </Stack>
+                <SimpleChat
+                    currentMessages={this.state.currentMessages}
+                    typingIndicatorStatus={this.state.typingIndicatorStatus}
+                    handleSend = {this.handleSend}
+                />
+            </Stack>
         )
     }
 }
