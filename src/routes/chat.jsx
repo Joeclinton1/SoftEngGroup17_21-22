@@ -1,4 +1,5 @@
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import './chat.css';
 import {
     MainContainer,
     ChatContainer,
@@ -77,6 +78,22 @@ class Chat extends Component {
         }
     }
 
+    componentDidMount = () => {
+        const chatContainer = document.getElementsByClassName("cs-main-container")[0];
+        const colour = chatContainer.getAttribute("data-colour")
+        const selectors = [
+            ".cs-message__content",
+            ".cs-message-input__content-editor",
+            ".cs-message-input__content-editor-wrapper"
+        ]
+        selectors.forEach((selector) => {
+            const colourable = document.querySelectorAll(selector)
+            console.log(colourable)
+            for (const el of colourable) {
+                el.style.backgroundColor = colour;
+            }
+        })
+    }
 
     getFile = async (e) => {
         e.preventDefault()
@@ -234,6 +251,21 @@ class Chat extends Component {
         //console.log(JSON.parse(window.localStorage.getItem("currentMessages")))
     };
 
+    //  options of styles to be selected by option.
+    fontSizes = {
+        0: "0.8em",
+        1: "1em",
+        2: "1.25em",
+        3: "1.5em"
+    }
+
+    chatColours = {
+        'r': '#fac6c6',
+        'b': '#c6e3fa',
+        'g': '#c6facc',
+        'y': '#faf8c6',
+    }
+
     render() {
         const { currentMessages, typingIndicator } = this.state;
 
@@ -249,15 +281,21 @@ class Chat extends Component {
                                 <Button variant="outlined" component="span" > Load Previous Chat </Button>
                             </label>
                         </Stack>
-                        <MainContainer>
+                        <MainContainer
+                            data-colour={this.chatColours[options.chatColour]}
+                            style={{
+                                "fontSize": this.fontSizes[options.fontSize]
+                            }}>
                             <ChatContainer>
                                 <MessageList typingIndicator={typingIndicator}>
                                     {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
-                                        <MessageGroup.Messages style={{ "fontSize": ["0.8em", "1em", "1.25em", "1.5em"][options.fontSize]}}>
-                                            {g.messages.map((m) => <Message key={m.id} model={{
-                                                type: "html",
-                                                payload: m.content
-                                            }} />)}
+                                        <MessageGroup.Messages>
+                                            {g.messages.map((m) =>
+                                                <Message key={m.id} model={{
+                                                    type: "html",
+                                                    payload: m.content
+                                                }} />
+                                            )}
                                         </MessageGroup.Messages>
                                     </MessageGroup>)}
                                 </MessageList>
@@ -269,7 +307,7 @@ class Chat extends Component {
         )
     }
 }
-
+Chat.contextType = OptionsContext;
 export default Chat;
 
 

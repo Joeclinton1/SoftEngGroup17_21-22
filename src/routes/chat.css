@@ -1,0 +1,8 @@
+.cs-message__content{
+    overflow: hidden;
+}
+
+.message-content-inner{
+    margin: -6em -9em;
+    padding: 6em 9em;
+}
