@@ -215,14 +215,18 @@ class Chat extends Component {
                 } else {
                     var resultWD = res.result.passages
                     var resultST = res.result.session_token
-                    var resultDI = res.result.passages[0].document_id
-
-                    var rtext_in = resultST.concat('^').concat(resultDI)
-                    //Relevancy code (Moved to backend i.e. app.js)
-                    fetch("/relev?rtext=".concat(rtext_in))
-                        .then(res => console.log(res))
 
                     const numRes = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
+
+                    for(let i = 0; i<numRes; i++){
+                        var resultDI = res.result.passages[i].document_id
+
+                        var rtext_in = resultST.concat('^').concat(resultDI)
+                        //Relevancy code (Moved to backend i.e. app.js)
+                        fetch("/relev?rtext=".concat(rtext_in))
+                            .then(res => console.log(res))
+                    }
+
                     const scoreArray = res.result.passages.map((res) => res.passage_score).slice(0, numRes)
                     const resArray = resultWD.map((res) => res.passage_text).slice(0, numRes)
 
