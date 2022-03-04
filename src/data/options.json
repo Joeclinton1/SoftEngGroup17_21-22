@@ -2,6 +2,7 @@
     "fontSize": 20,
     "chatColour": "b",
     "lang": 0,
+    "showConf": 1,
     "numResults": 1,
     "isSummarised": 1
 }

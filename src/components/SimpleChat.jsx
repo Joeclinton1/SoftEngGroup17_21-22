@@ -38,7 +38,8 @@ export default function SimpleChat({currentMessages, typingIndicatorStatus, hand
                     data-num-results={options.numResults}
                     style={{
                         "fontSize": fontSizes[options.fontSize]
-                    }}>
+                    }}
+                    data-show-conf={options.showConf}>
                     <ChatContainer>
                         <MessageList typingIndicator={typingIndicator}>
                             {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>

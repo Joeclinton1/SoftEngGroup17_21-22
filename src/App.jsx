@@ -50,8 +50,8 @@ function App() {
     if(cookies.get('fontSize') == null){
         cookies.set('fontSize', 1, { path: '/' });
     }
-    if(cookies.get('lang') == null){
-        cookies.set('lang', 0, { path: '/' });
+    if(cookies.get('showConf') == null){
+        cookies.set('showConf', 1, { path: '/' });
     }
     if(cookies.get('chatColour') == null){
         cookies.set('chatColour', 'b', { path: '/' });
@@ -64,7 +64,7 @@ function App() {
     }
 
 
-    const cookieOptions = Object.fromEntries(['fontSize', 'chatColour', 'numResults', 'isSummarised'].map((optionName)=>(
+    const cookieOptions = Object.fromEntries(['fontSize', 'chatColour', 'showConf', 'numResults', 'isSummarised'].map((optionName)=>(
         [optionName, cookies.get(optionName)]
     )))
     const [options, setOptions] = React.useState(cookieOptions)
