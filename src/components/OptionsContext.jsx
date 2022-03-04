@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export const defaultOptions = {
-    fontSize: 20,
+    fontSize: 0,
     chatColour: 'b',
     lang: 0,
     numResults: 1,

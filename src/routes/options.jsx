@@ -50,8 +50,7 @@ class Options extends Component {
     }
 
     handleChange = (id, event)=>{
-        this.setState({[id]: event.target.value});
-        this.setOptions(this.state)
+        this.setState({[id]: event.target.value}, ()=>{this.setOptions(this.state)});
     }
     
     changeCookie = (id, value)=>{
@@ -76,9 +75,10 @@ class Options extends Component {
                     handleChange = {this.handleChange}
                     changeCookie = {this.changeCookie}
                     MenuItems = {[
-                        [15,"15 px"],
-                        [20,"20 px"],
-                        [25,"25 px"]
+                        [0,"Small"],
+                        [1,"Normal"],
+                        [2,"Large"],
+                        [3,"Very Large"]
                     ]}
                 />
 

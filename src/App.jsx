@@ -49,7 +49,7 @@ function App() {
 
     //initialize default cookie values
     if(cookies.get('fontSize') == null){
-        cookies.set('fontSize', 20, { path: '/' });
+        cookies.set('fontSize', 1, { path: '/' });
     }
     if(cookies.get('lang') == null){
         cookies.set('lang', 0, { path: '/' });

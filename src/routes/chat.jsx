@@ -11,6 +11,7 @@ import {
 import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { OptionsContext } from "../components/OptionsContext";
 
 
 //Initialize Watson instance
@@ -18,11 +19,11 @@ const DiscoveryV1 = require('ibm-watson/discovery/v1');
 const { IamAuthenticator } = require('ibm-watson/auth');
 
 const discovery = new DiscoveryV1({
-version: '2019-04-30',
-authenticator: new IamAuthenticator({
-    apikey: '__Kp8R3pLrESr2vmVT4vRjsgBEo5ZKkWHPPar0pOOti2',
-}),
-serviceUrl: 'https://api.eu-gb.discovery.watson.cloud.ibm.com/instances/d874b546-9b02-4c6a-bc6c-3042fedb37be',
+    version: '2019-04-30',
+    authenticator: new IamAuthenticator({
+        apikey: '__Kp8R3pLrESr2vmVT4vRjsgBEo5ZKkWHPPar0pOOti2',
+    }),
+    serviceUrl: 'https://api.eu-gb.discovery.watson.cloud.ibm.com/instances/d874b546-9b02-4c6a-bc6c-3042fedb37be',
 });
 
 
@@ -49,15 +50,15 @@ const initialMessages = [new ChatGroup(0, "incoming", [
     new ChatMessage(1, "What would you like to know about IBM Cloud for Financial Services?")
 ])]
 
-class Chat extends Component{
-    constructor(props){
+class Chat extends Component {
+    constructor(props) {
         super(props);
         var text = ''
 
-        if (!!(window.localStorage.getItem("currentMessages"))){
+        if (!!(window.localStorage.getItem("currentMessages"))) {
             text = JSON.parse(window.localStorage.getItem("currentMessages"));
         }
-        
+
         this.cookies = this.props.cookies
         this.state = {
             currentMessages: text || initialMessages,
@@ -71,8 +72,8 @@ class Chat extends Component{
 
     //ran if Storage changes
     storageChanged(e) {
-        if(e.key === 'currentMessages') {
-            this.setState({currentMessages: e.newValue})
+        if (e.key === 'currentMessages') {
+            this.setState({ currentMessages: e.newValue })
         }
     }
 
@@ -81,23 +82,23 @@ class Chat extends Component{
         e.preventDefault()
         const reader = new FileReader()
 
-        reader.onload = async (e) => { 
+        reader.onload = async (e) => {
             const text = (e.target.result)
             let jsonParse = JSON.parse(text)
             let newMessages = []
-            
-            for (let i=0; i < jsonParse.length; i++) {
+
+            for (let i = 0; i < jsonParse.length; i++) {
                 let messagesToAdd = []
 
-                for (let j=0; j < jsonParse[i].messages.length; j++) {
+                for (let j = 0; j < jsonParse[i].messages.length; j++) {
                     messagesToAdd.push(new ChatMessage(jsonParse[i].messages[j].id, jsonParse[i].messages[j].content))
                 }
-                
+
                 newMessages.push(new ChatGroup(jsonParse[i].id, jsonParse[i].direction, messagesToAdd))
             }
 
             this.setState({ currentMessages: newMessages })
-            
+
         };
         reader.readAsText(e.target.files[0])
     }
@@ -119,22 +120,22 @@ class Chat extends Component{
             })
         } else {
             //Display answer in chat component
-            
+
             this.setState({ typingIndicator: 0 });
-            for(let i =0; i<resp.length; i++){
+            for (let i = 0; i < resp.length; i++) {
                 this.setState({
                     currentMessages: [
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
                                 resp[i].substring(0, 300)
-                                ),
+                            ),
                         ]),
                     ]
-                }) 
+                })
                 key = key + 1
             }
-            this.setState({ 
+            this.setState({
                 currentMessages: [
                     ...this.state.currentMessages,
                     new ChatGroup(key, "incoming", [
@@ -147,23 +148,23 @@ class Chat extends Component{
         }
         window.localStorage.setItem("currentMessages", JSON.stringify(this.state.currentMessages))
     }
-    
+
     saveFunction = () => {
         // get elemnt for saving file
         const element = document.createElement("a");
         // get data from object and use JSON.stringify to convert to text
-        const file = new Blob([JSON.stringify(this.state.currentMessages)], {type: 'text/plain'});
+        const file = new Blob([JSON.stringify(this.state.currentMessages)], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
-        
+
         // get current time and date for use in filename
         let currentTime = new Date().toLocaleString();
         ////console.log(currentTime.substring(0, 10))
         //console.log(currentTime.substring(12))
 
         let timeFormatted = currentTime.substring(0, 10) + "_" + currentTime.substring(12)
-    
+
         // download file to users local storage
-        element.download = "transcipt_" + timeFormatted +".json";
+        element.download = "transcipt_" + timeFormatted + ".json";
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
     }
@@ -175,7 +176,7 @@ class Chat extends Component{
             .then(res => {
                 // If Watson returns no results
                 // Need to be able to handle when Watson returns a JSON with different structure then usual (e.g. response to query: Who are you)
-                if (res.result.matching_results == 0){
+                if (res.result.matching_results == 0) {
                     setTimeout(this.receiveNextMessage('empty'), 1000)
                 } else {
                     var resultWD = res.result.passages
@@ -186,14 +187,14 @@ class Chat extends Component{
                     //Relevancy code (Moved to backend i.e. app.js)
                     fetch("/relev?rtext=".concat(rtext_in))
                         .then(res => console.log(res))
-                    
+
                     const numRes = this.cookies.get('numResults')
-                    if(resultWD.length < numRes){
+                    if (resultWD.length < numRes) {
                         numRes = resultWD.length
                     }
 
                     const resArray = []
-                    for(let i = 0; i < numRes; i++){
+                    for (let i = 0; i < numRes; i++) {
                         resArray.push(resultWD[i].passage_text)
                     }
 
@@ -211,10 +212,12 @@ class Chat extends Component{
         const lastGroup = msgs[msgs.length - 1]
         if (lastGroup.direction === "outgoing") {
             lastGroup.messages.push(msg);
-            this.setState({currentMessages: [
-                ...msgs.slice(0, -1),
-                lastGroup
-            ]});
+            this.setState({
+                currentMessages: [
+                    ...msgs.slice(0, -1),
+                    lastGroup
+                ]
+            });
         } else {
             this.setState({
                 currentMessages: [
@@ -227,39 +230,42 @@ class Chat extends Component{
             });
         }
         window.localStorage.setItem("currentMessages", JSON.stringify(this.state.currentMessages))
-        this.setState({typingIndicator: <TypingIndicator content="IBM chatbot is typing"/>});
+        this.setState({ typingIndicator: <TypingIndicator content="IBM chatbot is typing" /> });
         //console.log(JSON.parse(window.localStorage.getItem("currentMessages")))
     };
 
-    render(){
+    render() {
         const { currentMessages, typingIndicator } = this.state;
-        
-        return (
-            <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
-                <Stack direction="row" spacing={2}>
-                    <Button variant="outlined" onClick={() => {this.saveFunction();}}>Export Current Chat</Button>
 
-                    <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file" onChange={(e) => this.getFile(e)}/>
-                    <label htmlFor="contained-button-file">
-                        <Button variant="outlined" component="span" > Load Previous Chat </Button>
-                    </label>
-                </Stack>
-                <MainContainer>
-                    <ChatContainer>
-                        <MessageList typingIndicator={typingIndicator}>
-                            {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
-                                <MessageGroup.Messages>
-                                    {g.messages.map((m) => <Message key={m.id} model={{
-                                        type: "html",
-                                        payload: m.content
-                                    }} />)}
-                                </MessageGroup.Messages>
-                            </MessageGroup>)}
-                        </MessageList>
-                        <MessageInput onSend={this.handleSend} placeholder="Type message here" />
-                    </ChatContainer>
-                </MainContainer>
-            </Stack>
+        return (
+            <OptionsContext.Consumer>
+                {options => (
+                    <Stack direction="column" spacing={2} style={{ display: "flex", maxWidth: "500px", minWidth: "300px" }}>
+                        <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={() => { this.saveFunction(); }}>Export Current Chat</Button>
+
+                            <input type="file" accept="/*" style={{ display: 'none' }} id="contained-button-file" onChange={(e) => this.getFile(e)} />
+                            <label htmlFor="contained-button-file">
+                                <Button variant="outlined" component="span" > Load Previous Chat </Button>
+                            </label>
+                        </Stack>
+                        <MainContainer>
+                            <ChatContainer>
+                                <MessageList typingIndicator={typingIndicator}>
+                                    {currentMessages.map((g) => <MessageGroup key={g.id} direction={g.direction}>
+                                        <MessageGroup.Messages style={{ "fontSize": ["0.8em", "1em", "1.25em", "1.5em"][options.fontSize]}}>
+                                            {g.messages.map((m) => <Message key={m.id} model={{
+                                                type: "html",
+                                                payload: m.content
+                                            }} />)}
+                                        </MessageGroup.Messages>
+                                    </MessageGroup>)}
+                                </MessageList>
+                                <MessageInput onSend={this.handleSend} placeholder="Type message here" />
+                            </ChatContainer>
+                        </MainContainer>
+                    </Stack>)}
+            </OptionsContext.Consumer>
         )
     }
 }
