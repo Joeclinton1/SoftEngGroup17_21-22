@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import {OptionsContext} from "../components/OptionsContext"
 
 
 const DynamicSelect = ({id, label, state, changeCookie, handleChange, MenuItems}) => (
@@ -39,16 +40,20 @@ class Options extends Component {
         super(props);
         this.setOptions = this.props.setOptions
         this.cookies = this.props.cookies
+        console.log(this.context)
         this.state = {
-            fontSize: this.cookies.get('fontSize'),
-            chatColour: this.cookies.get('chatColour'),
+            fontSize: 0,
+            chatColour: 0,
             // lang: this.cookies.get('lang'),
-            numResults: this.cookies.get('numResults'),
-            isSummarised: this.cookies.get('isSummarised')
+            numResults: 0,
+            isSummarised: 0
         }
         this.handleChange = this.handleChange.bind(this);
     }
 
+    componentDidMount = ()=>{
+        this.setState(this.context)
+    }
     handleChange = (id, event)=>{
         this.setState({[id]: event.target.value}, ()=>{this.setOptions(this.state)});
     }
@@ -135,5 +140,5 @@ class Options extends Component {
         )
     }
 }
-
+Options.contextType = OptionsContext;
 export default Options;

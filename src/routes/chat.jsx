@@ -77,7 +77,7 @@ class Chat extends Component {
         }
     }
 
-    componentDidMount = () => {
+    colourChat = () =>{
         const chatContainer = document.getElementsByClassName("cs-main-container")[0];
         const colour = chatContainer.getAttribute("data-colour")
         const selectors = [
@@ -87,12 +87,13 @@ class Chat extends Component {
         ]
         selectors.forEach((selector) => {
             const colourable = document.querySelectorAll(selector)
-            console.log(colourable)
             for (const el of colourable) {
                 el.style.backgroundColor = colour;
             }
         })
     }
+    componentDidMount = () => {this.colourChat()}
+    componentDidUpdate = () => {this.colourChat()}
 
     getFile = async (e) => {
         e.preventDefault()
@@ -203,17 +204,10 @@ class Chat extends Component {
                     //Relevancy code (Moved to backend i.e. app.js)
                     fetch("/relev?rtext=".concat(rtext_in))
                         .then(res => console.log(res))
-
-                    const numRes = this.cookies.get('numResults')
-                    if (resultWD.length < numRes) {
-                        numRes = resultWD.length
-                    }
-
-                    const resArray = []
-                    for (let i = 0; i < numRes; i++) {
-                        resArray.push(resultWD[i].passage_text)
-                    }
-
+                    
+                    const numRes =  document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
+                    const resArray = resultWD.map((res)=>res.passage_text).slice(0,numRes)
+                    console.log(resArray)
                     //Send results to recieveNextMessage
                     setTimeout(this.receiveNextMessage(resArray), 1000)
                 }
@@ -282,6 +276,7 @@ class Chat extends Component {
                         </Stack>
                         <MainContainer
                             data-colour={this.chatColours[options.chatColour]}
+                            data-num-results={options.numResults}
                             style={{
                                 "fontSize": this.fontSizes[options.fontSize]
                             }}>
@@ -306,7 +301,6 @@ class Chat extends Component {
         )
     }
 }
-Chat.contextType = OptionsContext;
 export default Chat;
 
 

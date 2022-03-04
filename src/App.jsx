@@ -45,7 +45,6 @@ const Main = styled('main')(
 
 function App() {
     const [open, setOpen] = React.useState(false);
-    const [options, setOptions] = React.useState(defaultOptions)
 
     //initialize default cookie values
     if(cookies.get('fontSize') == null){
@@ -63,6 +62,12 @@ function App() {
     if(cookies.get('isSummarised') == null){
         cookies.set('isSummarised', 1, { path: '/' });
     }
+
+
+    const cookieOptions = Object.fromEntries(['fontSize', 'chatColour', 'numResults', 'isSummarised'].map((optionName)=>(
+        [optionName, cookies.get(optionName)]
+    )))
+    const [options, setOptions] = React.useState(cookieOptions)
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -101,5 +106,4 @@ function App() {
         </OptionsContext.Provider>
     );
 }
-
 export default App;
