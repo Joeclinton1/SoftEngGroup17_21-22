@@ -110,7 +110,7 @@ class Chat extends Component {
         reader.readAsText(e.target.files[0])
     }
 
-    receiveNextMessage = (resp) => {
+    receiveNextMessage = (resp, scores) => {
         // if Watson returned no results
         var key = this.state.currentMessages.length
         if (resp === "empty") {
@@ -125,9 +125,36 @@ class Chat extends Component {
                     ]),
                 ]
             })
+        } else if (document.getElementsByClassName("cs-main-container")[0].getAttribute("data-show-conf") == 1){
+            this.setState({ typingIndicatorStatus: false });
+            for (let i = 0; i < resp.length; i++) {
+                this.setState({
+                    currentMessages: [
+                        ...this.state.currentMessages,
+                        new ChatGroup(key, "incoming", [
+                            new ChatMessage(0,
+                                resp[i].substring(0, 300)
+                            ),
+                            new ChatMessage(1,
+                                "Confidence score: ".concat(String(Number((scores[i]).toFixed(2))))
+                            ),
+                        ]),
+                    ]
+                })
+                key = key + 1
+            }
+            this.setState({
+                currentMessages: [
+                    ...this.state.currentMessages,
+                    new ChatGroup(key, "incoming", [
+                        new ChatMessage(0,
+                            "Does this answer your question?"
+                        )
+                    ]),
+                ]
+            });
         } else {
             //Display answer in chat component
-
             this.setState({ typingIndicatorStatus: false });
             for (let i = 0; i < resp.length; i++) {
                 this.setState({
@@ -188,18 +215,23 @@ class Chat extends Component {
                 } else {
                     var resultWD = res.result.passages
                     var resultST = res.result.session_token
-                    var resultDI = res.result.passages[0].document_id
-
-                    var rtext_in = resultST.concat('^').concat(resultDI)
-                    //Relevancy code (Moved to backend i.e. app.js)
-                    fetch("/relev?rtext=".concat(rtext_in))
-                        .then(res => console.log(res))
 
                     const numRes = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
+
+                    for(let i = 0; i<numRes; i++){
+                        var resultDI = res.result.passages[i].document_id
+
+                        var rtext_in = resultST.concat('^').concat(resultDI)
+                        //Relevancy code (Moved to backend i.e. app.js)
+                        fetch("/relev?rtext=".concat(rtext_in))
+                            .then(res => console.log(res))
+                    }
+
+                    const scoreArray = res.result.passages.map((res) => res.passage_score).slice(0, numRes)
                     const resArray = resultWD.map((res) => res.passage_text).slice(0, numRes)
-                    console.log(resArray)
+
                     //Send results to recieveNextMessage
-                    setTimeout(this.receiveNextMessage(resArray), 1000)
+                    setTimeout(this.receiveNextMessage(resArray, scoreArray), 1000)
                 }
             })
             .catch(err => err);
