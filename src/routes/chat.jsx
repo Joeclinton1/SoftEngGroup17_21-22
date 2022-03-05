@@ -249,7 +249,7 @@ class Chat extends Component {
                     }
                     console.log(responses)
                     //Send results to recieveNextMessage
-                    setTimeout(this.receiveNextMessage(responses), 1000)
+                    setTimeout(this.receiveNextMessage(responses, scoreArray), 1000)
                 }
             })
             .catch(err => err);
