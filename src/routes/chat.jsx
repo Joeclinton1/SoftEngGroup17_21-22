@@ -241,11 +241,14 @@ class Chat extends Component {
                     }
 
                     const scoreArray = res.result.passages.map((res) => res.passage_score).slice(0, numRes)
-                    const resArray = resultWD.map((res) => res.passage_text).slice(0, numRes)
+                    const resArray = resultWD.map((res) => {
+                        return  res.passage_text
+                    }).slice(0, numRes)
                     console.log(resArray)
                     const responses = []
                     for (let i = 0; i < numRes; i++){
-                        responses.push(resArray[i]+"\nLink to document: " + links[res.result.results[i].extracted_metadata.filename])
+                        const link = links[res.result.results[i].extracted_metadata.filename]
+                        responses.push(`${resArray[i]}\n <a href='${link}'>Link to document</a>`)
                     }
                     console.log(responses)
                     //Send results to recieveNextMessage
