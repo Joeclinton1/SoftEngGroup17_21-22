@@ -58,6 +58,7 @@ class Chat extends Component {
         window.addEventListener('storage', (e) => this.storageChanged(e));
 
         this.storageChanged = this.storageChanged.bind(this);
+        this.handleSend = this.handleSend.bind(this);
     }
 
     //ran if Storage changes
@@ -237,7 +238,7 @@ class Chat extends Component {
             .catch(err => err);
     }
 
-    handleSend = (text) => {
+    handleSend(text){
         const msgs = this.state.currentMessages
         const id = msgs.length;
         const msg = new ChatMessage(id, text);
