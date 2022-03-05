@@ -146,7 +146,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i].substring(0, 300)
+                                resp[i].substring(0, 1000)
                             ),
                             new ChatMessage(1,
                                 "Confidence score: ".concat(String(Number((scores[i]).toFixed(2))))
@@ -248,6 +248,7 @@ class Chat extends Component {
                     const responses = []
                     for (let i = 0; i < numRes; i++){
                         const link = links[res.result.results[i].extracted_metadata.filename]
+                        console.log(res.result.results[i].extracted_metadata.filename)
                         responses.push(`${resArray[i]}\n <a href='${link}'>Link to document</a>`)
                     }
                     console.log(responses)
