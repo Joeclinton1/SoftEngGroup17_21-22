@@ -40,6 +40,18 @@ const initialMessages = [new ChatGroup(0, "incoming", [
     new ChatMessage(1, "What would you like to know about IBM Cloud for Financial Services?")
 ])]
 
+const links = {
+    "Data sheet.pdf" : "https://www.ibm.com/downloads/cas/1OLRGDBA?",
+    "What is IBM Cloud for Financial Services.html":"https://cloud.ibm.com/docs/overview?topic=overview-what-is-fscloud",
+    "IBM Cloud for Financial Services _ IBM.html":"https://www.ibm.com/cloud/financial-services",
+    "Cloud for FS FAQ & Field Guide.docx": "https://docs.google.com/document/d/1TAytTSvitpXWAl5kQUiDQDqOgx4KsLvB/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
+    "Cloud for FS FAQ & Field Guide 1.docx":"https://docs.google.com/document/d/1eZEAA59VF6oy9lpXDgGlTUkV8oE4bZsb-vlVRsycrC8/edit?usp=sharing",
+    "Cloud for FS FAQ & Field Guide 2.docx":"https://docs.google.com/document/d/1DtpHtx5gpI9EhzWe81RGd9y3EJHumbPMor-f6G6x0WY/edit?usp=sharing",
+    "Cloud for FS FAQ & Field Guide 3.docx":"https://docs.google.com/document/d/1JgRh_lcxpBxp6rvxQUKyfRBxxqBP1hbC/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
+    "Cloud for FS FAQ & Field Guide 4.docx":"https://docs.google.com/document/d/1nJqSfVz3RFG4540QxYEiWWTcIDShGDVV/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
+    "Cloud for FS FAQ & Field Guide 5.docx":"https://docs.google.com/document/d/1vVHtCa50BmZJ1PmzP3FQ_y_jjwRjonu0XQe7nk3qKpk/edit?usp=sharing"
+}
+
 class Chat extends Component {
     constructor(props) {
         super(props);
@@ -163,7 +175,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i].substring(0, 300)
+                                resp[i].substring(0, 1000)
                             ),
                         ]),
                     ]
@@ -230,9 +242,14 @@ class Chat extends Component {
 
                     const scoreArray = res.result.passages.map((res) => res.passage_score).slice(0, numRes)
                     const resArray = resultWD.map((res) => res.passage_text).slice(0, numRes)
-
+                    console.log(resArray)
+                    const responses = []
+                    for (let i = 0; i < numRes; i++){
+                        responses.push(resArray[i]+"\nLink to document: " + links[res.result.results[i].extracted_metadata.filename])
+                    }
+                    console.log(responses)
                     //Send results to recieveNextMessage
-                    setTimeout(this.receiveNextMessage(resArray, scoreArray), 1000)
+                    setTimeout(this.receiveNextMessage(responses), 1000)
                 }
             })
             .catch(err => err);
