@@ -281,8 +281,25 @@ class Chat extends Component {
                     new ChatGroup(msgs.length, "outgoing", [msg])
                 ]
             }, () => {
-                //send query to Watson and handle response
-                this.callWD(text)
+                if(msgs.length>=2 && msgs[msgs.length - 2].direction === "incoming" && (text.includes("yes") || text.includes("no"))){
+                    const response = text.includes("yes") ?
+                    "Happy to have helped. Have a good day!": 
+                    "I'm sorry that my response did not answer your question. Please try rephrasing your question or including more keywords and ask again."
+                    this.setState({
+                        currentMessages: [
+                            ...this.state.currentMessages,
+                            new ChatGroup(this.state.currentMessages.length, "incoming", [
+                                new ChatMessage(0,
+                                   response
+                                ),
+                            ]),
+                        ]
+                    })
+                    this.setState({ typingIndicatorStatus: false});
+                }else{
+                     //send query to Watson and handle response
+                    this.callWD(text)
+                }
             });
         }
         window.localStorage.setItem("currentMessages", JSON.stringify(this.state.currentMessages))
