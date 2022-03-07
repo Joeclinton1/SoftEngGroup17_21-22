@@ -41,15 +41,15 @@ const initialMessages = [new ChatGroup(0, "incoming", [
 ])]
 
 const links = {
-    "Data sheet.pdf" : "https://www.ibm.com/downloads/cas/1OLRGDBA?",
-    "What is IBM Cloud for Financial Services.html":"https://cloud.ibm.com/docs/overview?topic=overview-what-is-fscloud",
-    "IBM Cloud for Financial Services _ IBM.html":"https://www.ibm.com/cloud/financial-services",
-    "Cloud for FS FAQ & Field Guide.docx": "https://docs.google.com/document/d/1TAytTSvitpXWAl5kQUiDQDqOgx4KsLvB/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
-    "Cloud for FS FAQ & Field Guide 1.docx":"https://docs.google.com/document/d/1eZEAA59VF6oy9lpXDgGlTUkV8oE4bZsb-vlVRsycrC8/edit?usp=sharing",
-    "Cloud for FS FAQ & Field Guide 2.docx":"https://docs.google.com/document/d/1DtpHtx5gpI9EhzWe81RGd9y3EJHumbPMor-f6G6x0WY/edit?usp=sharing",
-    "Cloud for FS FAQ & Field Guide 3.docx":"https://docs.google.com/document/d/1JgRh_lcxpBxp6rvxQUKyfRBxxqBP1hbC/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
-    "Cloud for FS FAQ & Field Guide 4.docx":"https://docs.google.com/document/d/1nJqSfVz3RFG4540QxYEiWWTcIDShGDVV/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",
-    "Cloud for FS FAQ & Field Guide 5.docx":"https://docs.google.com/document/d/1vVHtCa50BmZJ1PmzP3FQ_y_jjwRjonu0XQe7nk3qKpk/edit?usp=sharing"
+    "636ff4045f78006df87ef7cd7f12572c" : "https://www.ibm.com/downloads/cas/1OLRGDBA?", //Data sheet.pdf
+    "68fef20f6e7538238ea6dc9ee543ecd9":"https://cloud.ibm.com/docs/overview?topic=overview-what-is-fscloud",//What is IBM Cloud for Financial Services.html
+    "deddf61c613e50e3a3117cf3ea4b72ba":"https://www.ibm.com/cloud/financial-services", //IBM Cloud for Financial Services _ IBM.html
+    "2d65f6fa6dbc888c1fe527591091b94b": "https://docs.google.com/document/d/1TAytTSvitpXWAl5kQUiDQDqOgx4KsLvB/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true",//Cloud for FS FAQ & Field Guide.docx
+    "90086f8de864ac9d141bea976c66f103":"https://docs.google.com/document/d/1eZEAA59VF6oy9lpXDgGlTUkV8oE4bZsb-vlVRsycrC8/edit?usp=sharing",//Cloud for FS FAQ & Field Guide 1.docx
+    "ecf548fcf4dbb7c8871d9fe23afaa045":"https://docs.google.com/document/d/1DtpHtx5gpI9EhzWe81RGd9y3EJHumbPMor-f6G6x0WY/edit?usp=sharing", //Cloud for FS FAQ & Field Guide 2.docx
+    "8e97c2629adae1efbf2f9241082061ef":"https://docs.google.com/document/d/1JgRh_lcxpBxp6rvxQUKyfRBxxqBP1hbC/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true", //Cloud for FS FAQ & Field Guide 3.docx
+    "1401a4a6aff84f3db0fa3a1f029a1467":"https://docs.google.com/document/d/1nJqSfVz3RFG4540QxYEiWWTcIDShGDVV/edit?usp=sharing&ouid=113384434230823271599&rtpof=true&sd=true", //Cloud for FS FAQ & Field Guide 4.docx
+    "e44475878a76030df75e0d96d49c3c5c":"https://docs.google.com/document/d/1vVHtCa50BmZJ1PmzP3FQ_y_jjwRjonu0XQe7nk3qKpk/edit?usp=sharing"//Cloud for FS FAQ & Field Guide 5.docx
 }
 
 class Chat extends Component {
@@ -146,7 +146,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i]
+                                resp[i].substring(0, 1000)
                             ),
                             new ChatMessage(1,
                                 "Confidence score: ".concat(String(Number((scores[i]).toFixed(2))))
@@ -175,7 +175,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i]
+                                resp[i].substring(0, 1000)
                             ),
                         ]),
                     ]
@@ -246,10 +246,13 @@ class Chat extends Component {
                     }).slice(0, numRes)
 
                     const responses = []
-                    for (let i = 0; i < numRes; i++){
-                        const link = links[res.result.results[i].extracted_metadata.filename]
-                        responses.push(`${resArray[i]}\n <a href='${link}'>Link to document</a>`)
-                    }
+                    console.log(res)
+                        for  (let i = 0; i < numRes; i++){
+                            var doc = res.result.passages[i].document_id
+                            var doc_id = doc.slice(0,32)//parent document IDs are always 32 characters long
+                            var link = links[doc_id]
+                            responses.push(`${resArray[i]}\n <a href='${link}'>Link to document</a>`)
+                        }
                     console.log(responses)
                     //Send results to recieveNextMessage
                     setTimeout(this.receiveNextMessage(responses, scoreArray), 1000)
