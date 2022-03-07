@@ -146,7 +146,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i].substring(0, 300)
+                                resp[i]
                             ),
                             new ChatMessage(1,
                                 "Confidence score: ".concat(String(Number((scores[i]).toFixed(2))))
@@ -175,7 +175,7 @@ class Chat extends Component {
                         ...this.state.currentMessages,
                         new ChatGroup(key, "incoming", [
                             new ChatMessage(0,
-                                resp[i].substring(0, 1000)
+                                resp[i]
                             ),
                         ]),
                     ]
@@ -230,21 +230,21 @@ class Chat extends Component {
                     var resultST = res.result.session_token
 
                     const numRes = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
+                    
+                    // for(let i = 0; i<numRes; i++){
+                    //     var resultDI = res.result.passages[i].document_id
 
-                    for(let i = 0; i<numRes; i++){
-                        var resultDI = res.result.passages[i].document_id
-
-                        var rtext_in = resultST.concat('^').concat(resultDI)
-                        //Relevancy code (Moved to backend i.e. app.js)
-                        fetch("/relev?rtext=".concat(rtext_in))
-                            .then(res => console.log(res))
-                    }
+                    //     var rtext_in = resultST.concat('^').concat(resultDI)
+                    //     //Relevancy code (Moved to backend i.e. app.js)
+                    //     // fetch("/relev?rtext=".concat(rtext_in))
+                    //     //     .then(res => console.log(res))
+                    // }
 
                     const scoreArray = res.result.passages.map((res) => res.passage_score).slice(0, numRes)
                     const resArray = resultWD.map((res) => {
                         return  res.passage_text
                     }).slice(0, numRes)
-                    console.log(resArray)
+
                     const responses = []
                     for (let i = 0; i < numRes; i++){
                         const link = links[res.result.results[i].extracted_metadata.filename]
