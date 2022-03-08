@@ -30,8 +30,8 @@ export default class SimpleChat extends Component {
             'y': '#faf8c6',
         }
     }
-
     componentDidMount = () => this.colourChat()
+    componentDidUpdate = () => this.colourChat()
 
     colourChat() {
         const chatContainer = document.getElementsByClassName("cs-main-container")[0];

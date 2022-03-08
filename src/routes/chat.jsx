@@ -71,14 +71,14 @@ class Chat extends Component {
         if (resp === "empty") {
             this.appendMessages(INCOMING, ["I'm sorry, I couldn't understand. Could you please rephrase the question?"])
         } else {
-            const showConf = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-show-conf") === 1
+            const showConf = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-show-conf") === '1'
             this.appendMessages(INCOMING, resp.map((msg, i) =>
                 [
                     msg.substring(0, 1000),
                     ...showConf ? [`Confidence score: ${scores[i].toFixed(2)}`] : [],
-                    "Does this answer your question?"
+                    
                 ]
-            ).flat());
+            ).flat().concat("Does this answer your question?"));
         }
         window.localStorage.setItem("messages", JSON.stringify(this.state.messages))
     }
