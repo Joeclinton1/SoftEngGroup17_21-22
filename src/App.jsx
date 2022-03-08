@@ -8,7 +8,7 @@ import DrawerHeader from "./components/DrawerHeader";
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { styled } from '@mui/material/styles';
-import { defaultOptions, OptionsContext } from "./components/OptionsContext";
+import { OptionsContext } from "./components/OptionsContext";
 import {
     BrowserRouter as Router,
     Routes,

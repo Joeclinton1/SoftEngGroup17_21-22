@@ -108,11 +108,11 @@ class Chat extends Component {
             .then(res => {
                 // If Watson returns no results
                 // Need to be able to handle when Watson returns a JSON with different structure then usual (e.g. response to query: Who are you)
-                if (res.result.matching_results == 0) {
+                if (res.result.matching_results === 0) {
                     setTimeout(this.handleReceive('empty'), 1000)
                 } else {
                     var resultWD = res.result.passages
-                    var resultST = res.result.session_token
+                    // var resultST = res.result.session_token
 
                     const numRes = document.getElementsByClassName("cs-main-container")[0].getAttribute("data-num-results")
 
