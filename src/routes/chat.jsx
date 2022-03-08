@@ -327,24 +327,3 @@ class Chat extends Component {
     }
 }
 export default Chat;
-
-
-// const item = window.localStorage.getItem('currentMessages');
-// const getInitialMessages = () =>{
-//     if(item !== null){
-//         return JSON.parse(item);
-//     }else return(
-//         new ChatGroup(0, "incoming", [
-//             new ChatMessage(0, "Hi"),
-//             new ChatMessage(1, "What would you like to know about IBM Cloud for Financial Services?")
-//         ])
-//     );
-// }
-
-// useEffect(() => {
-//     setCurrentMessages();
-//   }, []);
-
-// useEffect(() => {ls
-//     window.localStorage.setItem('currentMessages', currentMessages);
-// }, [currentMessages]);
