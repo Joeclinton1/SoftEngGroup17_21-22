@@ -41,6 +41,9 @@ class Chat extends Component {
 
     //append messages to messages state
     appendMessages(direction, messageList) {
+        if(![0,1].includes(direction)){
+            throw new Error(`direction must be 0 or 1 not "${direction}"`)
+        }
         const messages = this.state.messages
         const lastGroup = messages[this.state.messages.length - 1];
         if (lastGroup.direction === direction) {
