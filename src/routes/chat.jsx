@@ -88,7 +88,7 @@ class Chat extends Component {
         this.appendMessages(OUTGOING, [text])
 
         if (lastReceivedQuestion && (text.includes("yes") || text.includes("no"))) {
-            this.appendMessages([text.includes("yes") ?
+            this.appendMessages(INCOMING, [text.includes("yes") ?
                 "Happy to have helped. Have a good day!" :
                 "I'm sorry that my response did not answer your question. Please try rephrasing your question or including more keywords and ask again."
             ])
