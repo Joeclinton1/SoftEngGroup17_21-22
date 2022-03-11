@@ -3,7 +3,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const DynamicSelect = ({id, label, state, changeCookie, handleChange, MenuItems}) => (
+export default function DynamicSelect ({id, label, state, changeCookie, handleChange, MenuItems}){
     /*
     id: a unique name to describe the form input
     label: the human readable name that will be displayed
@@ -29,6 +29,4 @@ const DynamicSelect = ({id, label, state, changeCookie, handleChange, MenuItems}
         ))}
         </Select>
     </FormControl>
-)
-
-export default DynamicSelect;
+}

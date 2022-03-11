@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import Card from '@mui/material/Card';
 import {OptionsContext} from "../components/OptionsContext"
-import {DynamicSelect} from "../components/DynamicSelect"
+import DynamicSelect from "../components/DynamicSelect"
 
 class Options extends Component {
     constructor(props) {
