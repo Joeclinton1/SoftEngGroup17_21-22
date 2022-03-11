@@ -57,7 +57,7 @@ app.get('/queryWD', (req, res) => {
         collectionId: '2e651944-431c-4dbc-b407-716036caea75',
         configurationId: '90941570-b5c8-4d55-b39a-cd9b26cdf9a8',
         naturalLanguageQuery: text,
-        passagesFields: 'text, subtitle, title, answer' 
+        passagesFields: 'text, answer' 
     };
 
     discovery.query(queryParams)
