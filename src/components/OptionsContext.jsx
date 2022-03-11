@@ -1,11 +1,5 @@
 import * as React from 'react';
+import options from '../data/options.json';
 
-export const defaultOptions = {
-    fontSize: 0,
-    chatColour: 'b',
-    lang: 0,
-    numResults: 1,
-    isSummarised: 1
-}
-
+export const defaultOptions = options
 export const OptionsContext = React.createContext(defaultOptions);

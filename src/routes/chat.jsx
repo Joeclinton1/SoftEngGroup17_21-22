@@ -23,7 +23,6 @@ class Chat extends Component {
             text = JSON.parse(window.localStorage.getItem("messages"));
         }
 
-        this.cookies = this.props.cookies
         this.state = {
             messages: text || [new ChatGroup(INCOMING, [
                 "Hello, thank you for using IBM's chatbot assistance tool.",
