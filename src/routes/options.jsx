@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 import Card from '@mui/material/Card';
-import {OptionsContext} from "../components/OptionsContext"
+import {defaultOptions, OptionsContext} from "../components/OptionsContext"
 import DynamicSelect from "../components/DynamicSelect"
 
 class Options extends Component {
@@ -8,15 +8,7 @@ class Options extends Component {
         super(props);
         this.setOptions = this.props.setOptions
         this.cookies = this.props.cookies
-        console.log(this.context)
-        this.state = {
-            fontSize: 0,
-            chatColour: 0,
-            showConf: 0,
-            // lang: this.cookies.get('lang'),
-            numResults: 0,
-            isSummarised: 0
-        }
+        this.state = defaultOptions
         this.handleChange = this.handleChange.bind(this);
     }
 
