@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import SimpleChat from "../components/SimpleChat"
 import links from '../data/links.json'
 
-window.localStorage.setItem('messages', []);
 class ChatGroup {
     constructor(direction, messages) {
         this.direction = direction;
@@ -19,8 +18,10 @@ class Chat extends Component {
         super(props);
         var text = ''
 
-        if (!!(window.localStorage.getItem("messages"))) {
+        if ((window.localStorage.getItem("messages"))) {
             text = JSON.parse(window.localStorage.getItem("messages"));
+        }else{
+            window.localStorage.setItem('messages', []);
         }
 
         this.state = {
@@ -31,9 +32,9 @@ class Chat extends Component {
             typingIndicatorStatus: false,
         }
 
-        window.addEventListener('storage', (e) => this.storageChanged(e));
+        // window.addEventListener('storage', (e) => this.storageChanged(e));
 
-        this.storageChanged = this.storageChanged.bind(this);
+        // this.storageChanged = this.storageChanged.bind(this);
         this.handleSend = this.handleSend.bind(this);
         this.lastDirection = INCOMING
     }
@@ -146,12 +147,13 @@ class Chat extends Component {
             .catch(err => err);
     }
 
-    //run if Storage changes
-    storageChanged(e) {
-        if (e.key === 'messages') {
-            this.setState({ messages: e.newValue })
-        }
-    }
+    // //run if Storage changes
+    // storageChanged(e) {
+    //     if (e.key === 'messages') {
+    //         console.log("storage changed")
+    //         this.setState({ messages: e.newValue })
+    //     }
+    // }
 
     getFile = async (e) => {
         e.preventDefault()
