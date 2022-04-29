@@ -4,6 +4,8 @@ const app = express();
 const publicPath = path.join(__dirname, 'build');
 
 app.use(express.static(publicPath));
+const PORT = process.env.PORT || 9000;
+
 
 //Initialize Watson instance
 const DiscoveryV1 = require('ibm-watson/discovery/v1');
@@ -79,6 +81,6 @@ app.get('/queryWD', (req, res) => {
         });
 });
 
-app.listen(9000, () => {
+app.listen(PORT, () => {
   console.log('Express server is active');
 });

@@ -1,7 +1,6 @@
 applications:
-- name: IBMCloudChatbot
-memory: 256M
-path: build/
-buildpack: nodejs_buildpack
-routes:
-  - route: DurhamIBMC4FSChatbot.eu-gb.cf.appdomain.cloud
+- name: SOFTENGGROUP17_21-22
+  buildpacks:
+    - https://github.com/cloudfoundry/nodejs-buildpack
+  memory: 256M
+  random-route: true
